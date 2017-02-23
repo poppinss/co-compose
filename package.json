@@ -1,5 +1,5 @@
 {
-  "name": "gen-middleware",
+  "name": "co-compose",
   "version": "1.0.0",
   "description": "Adonis and koa style middleware layer with ability to run parallel middleware",
   "main": "index.js",
