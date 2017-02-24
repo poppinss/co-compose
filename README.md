@@ -1,8 +1,12 @@
 # Co Compose
 
-[Koa](http://koajs.com/) and [AdonisJs](http://adonisjs.com/) style middleware are super neat since they allow you to create a chain of **ES2015** generators and write maintainable async code.
+[Koa](http://koajs.com/) and [AdonisJs](http://adonisjs.com/) style middleware are super neat since they allow you to create a chain of **Async/Await** functions and write maintainable async code.
 
 **Co compose** makes it easier for you to add the support for same style of middleware inside your applications. It features:
+
+![](https://img.shields.io/badge/requires-node%20%3E%3D7.0-blue.svg?style=flat-square)
+[![](https://img.shields.io/travis/poppinss/co-compose/master.svg?style=flat-square)](https://travis-ci.org/poppinss/co-compose)
+
 
 1. Run middleware in sequence.
 2. Pass custom `context (this)` to middleware functions.
@@ -19,27 +23,26 @@ const middleware = new Middleware()
 
 const chain = []
 
-const fn1 * (next) {
+async function fn1 (next) {
   chain.push('fn1')
-  yield next
+  await next()
 }
 
-const fn2 * (next) {
+async function fn2 (next) {
   chain.push('fn2')
-  yield next
+  await next()
 }
 
-const fn3 * (next) {
+async function fn3 (next) {
   chain.push('fn3')
-  yield next
+  await next()
 }
 
 // Compose middleware
 const composedMiddleware = middleware.compose([fn1, fn2, fn3])
 
-co(function * () {
-  yield composedMiddleware()
-}).then(() => {
+composedMiddleware()
+.then(() => {
   assert.deepEqual(chain, ['fn1', 'fn2', 'fn3'])
 })
 ```
@@ -52,22 +55,22 @@ const co = require('co')
 const Middleware = require('co-compose')
 const middleware = new Middleware()
 
-const fn1 * (hash, next) {
+async function fn1 (hash, next) {
   hash.fn1 = true
   chain.push('fn1')
-  yield next
+  await next()
 }
 
-const fn2 * (hash, next) {
+async function fn2 (hash, next) {
   hash.fn2 = true
   chain.push('fn2')
-  yield next
+  await next()
 }
 
-const fn3 * (hash, next) {
+async function fn3 (hash, next) {
   hash.fn3 = true
   chain.push('fn3')
-  yield next
+  await next()
 }
 
 // Compose middleware with params
@@ -76,9 +79,8 @@ const composedMiddleware = middleware
   .withParams(hash)
   .compose([fn1, fn2, fn3])
 
-co(function * () {
-  yield composedMiddleware()
-}).then(() => {
+composedMiddleware()
+.then(() => {
   assert.deepEqual(hash, {fn1: true, fn2: true, fn3: true})
 })
 ```
@@ -93,16 +95,16 @@ const middleware = new Middleware()
 
 class Foo {
 
-  * handle (req, res, next) {
-    yield next
+  async handle (req, res, next) {
+    await next()
   }
 
 }
 
 class Bar {
 
-  * handle (res, res, next) {
-    yield next
+  async handle (res, res, next) {
+    await next()
   }
 
 }
@@ -126,14 +128,13 @@ Apart from composing middleware, you can also store middleware that can be refer
 const Middleware = require('co-compose')
 const middleware = new Middleware()
 
-const fn1 * (req, res, next) {
-  yield next
+async function fn1 (req, res, next) {
+  await next()
 }
 
-const fn2 * (req, res, next) {
-  yield next
+async function fn2 (req, res, next) {
+  await next()
 }
-
 
 // register
 middleware.register([fn1, fn2])

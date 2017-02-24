@@ -1,7 +1,7 @@
 'use strict'
 
 /*
- * gen-middleware
+ * co-compose
  *
  * (c) Harminder Virk <virk@adonisjs.com>
  *
@@ -9,62 +9,62 @@
  * file that was distributed with this source code.
 */
 
-const chai = require('chai')
-const assert = chai.assert
-const co = require('co')
+const test = require('japa')
 const Middleware = require('../index')
 
-describe('Middleware', function () {
-  it('should be able to register middleware to the middleware store', function () {
+test.group('Middleware | Async', () => {
+  test('should be able to register middleware to the middleware store', (assert) => {
     const middleware = new Middleware()
     middleware.register(['foo', 'bar'])
     assert.deepEqual(middleware.get(), ['foo', 'bar'])
     assert.deepEqual(middleware._store.root, ['foo', 'bar'])
   })
 
-  it('should be able to tag and register middleware to the middleware store', function () {
+  test('should be able to tag and register middleware to the middleware store', (assert) => {
     const middleware = new Middleware()
     middleware.tag('global').register(['foo', 'bar'])
     assert.deepEqual(middleware.tag('global').get(), ['foo', 'bar'])
     assert.deepEqual(middleware._store.global, ['foo', 'bar'])
   })
 
-  it('should throw an error when middleware list is not an array', function () {
+  test('should throw an error when middleware list is not an array', (assert) => {
     const middleware = new Middleware()
     const fn = () => middleware.register({name: 'foo'})
-    assert.throw(fn, 'Make sure to pass an array of middleware to register')
+    assert.throw(fn, 'middleware.register expects an array of middleware or an instance of pipeline')
   })
 
-  it('should be able to compose a middleware chain that can be executed in sequence', function (done) {
+  test('compose a middleware chain that can be executed in sequence', (assert, done) => {
+    assert.plan(1)
     const middleware = new Middleware()
     const chain = []
-    function * first (next) {
+    async function first (next) {
       chain.push('first')
-      yield next
+      await next()
     }
 
-    function * second (next) {
+    async function second (next) {
       chain.push('second')
-      yield next
+      await next()
     }
 
-    function * third (next) {
+    async function third (next) {
       chain.push('third')
-      yield next
+      await next()
     }
 
     middleware.register([first, second, third])
     const middlewareChain = middleware.get()
     const composedMiddleware = middleware.compose(middlewareChain)
-    co(function * () {
-      yield composedMiddleware()
-    }).then(() => {
+
+    composedMiddleware()
+    .then(() => {
       assert.deepEqual(chain, ['first', 'second', 'third'])
       done()
     }).catch(done)
   })
 
-  it('should be able to compose a middleware chain that can be executed in sequence even when some methods are async', function (done) {
+  test('compose a middleware chain that can be executed in sequence even when some methods are async', (assert, done) => {
+    assert.plan(1)
     const middleware = new Middleware()
     const chain = []
 
@@ -76,83 +76,82 @@ describe('Middleware', function () {
       })
     }
 
-    function * first (next) {
+    async function first (next) {
       chain.push('first')
-      yield next
+      await next()
     }
 
-    function * second (next) {
-      yield slowFn()
+    async function second (next) {
+      await slowFn()
       chain.push('second')
-      yield next
+      await next()
     }
 
-    function * third (next) {
+    async function third (next) {
       chain.push('third')
-      yield next
+      await next()
     }
 
     middleware.register([first, second, third])
     const middlewareChain = middleware.get()
     const composedMiddleware = middleware.compose(middlewareChain)
-    co(function * () {
-      yield composedMiddleware()
-    }).then(() => {
+
+    composedMiddleware()
+    .then(() => {
       assert.deepEqual(chain, ['first', 'second', 'third'])
       done()
     }).catch(done)
   })
 
-  it('should stop middleware chain when a method throws exception', function (done) {
+  test('stop middleware chain when a method throws exception', (assert, done) => {
+    assert.plan(2)
     const middleware = new Middleware()
     const chain = []
 
-    function * first (next) {
+    async function first (next) {
       chain.push('first')
-      yield next
+      await next()
     }
 
-    function * second (next) {
+    async function second (next) {
       throw new Error('I am killed')
-      yield next
     }
 
-    function * third (next) {
+    async function third (next) {
       chain.push('third')
-      yield next
+      await next()
     }
 
     middleware.register([first, second, third])
     const middlewareChain = middleware.get()
     const composedMiddleware = middleware.compose(middlewareChain)
 
-    co(function * () {
-      yield composedMiddleware()
-    }).then(() => {
-    }).catch((error) => {
+    composedMiddleware()
+    .catch((error) => {
       assert.equal(error.message, 'I am killed')
       assert.deepEqual(chain, ['first'])
       done()
     })
   })
 
-  it('should be able to pass context to few methods', function (done) {
+  test('pass context to few methods', (assert, done) => {
+    assert.plan(3)
     const middleware = new Middleware()
     const chain = []
 
-    function * first (next) {
+    async function first (next) {
       chain.push(this)
-      yield next
+      await next()
     }
 
-    function * second (next) {
+    async function second (next) {
       chain.push(this)
-      yield next
+      await next()
     }
 
-    function * third (next) {
+    async function third (next) {
       chain.push(this)
-      yield next
+      await next()
     }
 
     class Foo {}
@@ -166,9 +165,9 @@ describe('Middleware', function () {
       }
       return item.apply(null, params)
     }).compose(middlewareChain)
-    co(function * () {
-      yield composedMiddleware()
-    }).then(() => {
+
+    composedMiddleware()
+    .then(() => {
       assert.equal(chain[0], null)
       assert.equal(chain[1].constructor.name, 'Foo')
       assert.equal(chain[0], null)
@@ -176,21 +175,21 @@ describe('Middleware', function () {
     }).catch(done)
   })
 
-  it('should be able to pass params to all the middleware functions', function (done) {
+  test('pass params to all the middleware functions', (assert, done) => {
     const middleware = new Middleware()
-    function * first (request, next) {
+    async function first (request, next) {
       request.first = true
-      yield next
+      await next()
     }
 
-    function * second (request, next) {
+    async function second (request, next) {
       request.second = true
-      yield next
+      await next()
     }
 
-    function * third (request, next) {
+    async function third (request, next) {
       request.third = true
-      yield next
+      await next()
     }
 
     middleware.register([first, second, third])
@@ -198,29 +197,30 @@ describe('Middleware', function () {
     const request = {}
     const middlewareChain = middleware.get()
     const composedMiddleware = middleware.withParams(request).compose(middlewareChain)
-    co(function * () {
-      yield composedMiddleware()
-    }).then(() => {
+
+    composedMiddleware()
+    .then(() => {
       assert.deepEqual(request, {first: true, second: true, third: true})
       done()
     }).catch(done)
   })
 
-  it('should not mess up with params with multiple times compose is called', function (done) {
+  test('should not mess up with params when multiple times compose is called', (assert, done) => {
     const middleware = new Middleware()
-    function * first (request, next) {
+
+    async function first (request, next) {
       request.first = true
-      yield next
+      await next()
     }
 
-    function * second (request, next) {
+    async function second (request, next) {
       request.second = true
-      yield next
+      await next()
     }
 
-    function * third (request, next) {
+    async function third (request, next) {
       request.third = true
-      yield next
+      await next()
     }
 
     middleware.register([first, second, third])
@@ -230,37 +230,36 @@ describe('Middleware', function () {
     const composedMiddleware = middleware.withParams(request).compose(middleware.get())
     const composedMiddleware1 = middleware.withParams(request1).compose(middleware.get())
 
-    co(function * () {
-      yield composedMiddleware()
-      yield composedMiddleware1()
-    }).then(() => {
+    Promise
+    .all([composedMiddleware(), composedMiddleware1()])
+    .then(() => {
       assert.deepEqual(request, {first: true, second: true, third: true})
       assert.deepEqual(request1, {one: true, first: true, second: true, third: true})
       done()
     }).catch(done)
   })
 
-  it('should be able to pass params and bind context to all the middleware functions', function (done) {
+  test('should be able to pass params and bind context to all the middleware functions', (assert, done) => {
     const middleware = new Middleware()
 
     class First {
-      * handle (request, next) {
+      async handle (request, next) {
         request.first = this.constructor.name
-        yield next
+        await next()
       }
     }
 
     class Second {
-      * handle (request, next) {
+      async handle (request, next) {
         request.second = this.constructor.name
-        yield next
+        await next()
       }
     }
 
     class Third {
-      * handle (request, next) {
+      async handle (request, next) {
         request.third = this.constructor.name
-        yield next
+        await next()
       }
     }
 
@@ -271,44 +270,75 @@ describe('Middleware', function () {
       return i.handle.apply(i, params)
     }).compose(middleware.get())
 
-    co(function * () {
-      yield composedMiddleware()
-    }).then(() => {
+    composedMiddleware()
+    .then(() => {
       assert.deepEqual(request, {first: 'First', second: 'Second', third: 'Third'})
       done()
     }).catch(done)
   })
 
-  it('should be able to register middleware pipeline', function () {
+  test('ignore multiple calls to next', (assert, done) => {
+    assert.plan(1)
+    const middleware = new Middleware()
+    const chain = []
+
+    async function first (next) {
+      chain.push('first')
+      await next()
+    }
+
+    async function second (next) {
+      chain.push('second')
+      await next()
+      await next()
+    }
+
+    async function third (next) {
+      chain.push('third')
+      await next()
+    }
+
+    middleware.register([first, second, third])
+    const composedMiddleware = middleware.compose()
+
+    composedMiddleware()
+    .then(() => {
+      assert.deepEqual(chain, ['first', 'second', 'third'])
+      done()
+    }).catch(done)
+  })
+
+  test('register middleware pipeline', (assert) => {
     const middleware = new Middleware()
     const pipeline = middleware.pipeline(['foo', 'bar'])
     middleware.register(pipeline)
     assert.deepEqual(middleware.get()[0]._middleware, ['foo', 'bar'])
   })
 
-  it('should be able to register middleware pipeline with a named tag', function () {
+  test('register middleware pipeline with a named tag', (assert) => {
     const middleware = new Middleware()
     const pipeline = middleware.pipeline(['foo', 'bar'])
     middleware.tag('global').register(pipeline)
     assert.deepEqual(middleware.tag('global').get()[0]._middleware, ['foo', 'bar'])
   })
 
-  it('should be able to compose middleware created via pipeline', function (done) {
+  test('compose middleware created via pipeline', (assert, done) => {
     const middleware = new Middleware()
     const chain = []
-    function * first (next) {
+
+    async function first (next) {
       chain.push('first')
-      yield next
+      await next()
     }
 
-    function * second (next) {
+    async function second (next) {
       chain.push('second')
-      yield next
+      await next()
     }
 
-    function * third (next) {
+    async function third (next) {
       chain.push('third')
-      yield next
+      await next()
     }
 
     const pipeline = middleware.pipeline([first, second, third])
@@ -317,15 +347,14 @@ describe('Middleware', function () {
     const middlewareChain = middleware.get()
     const composedMiddleware = middleware.compose(middlewareChain)
 
-    co(function * () {
-      yield composedMiddleware()
-    }).then(() => {
+    composedMiddleware()
+    .then(() => {
       assert.deepEqual(chain, ['first', 'second', 'third'])
       done()
     }).catch(done)
   })
 
-  it('should execute pipeline middleware parallely', function (done) {
+  test('execute pipeline middleware parallely', (assert, done) => {
     const middleware = new Middleware()
     const chain = []
 
@@ -337,20 +366,20 @@ describe('Middleware', function () {
       })
     }
 
-    function * first (next) {
+    async function first (next) {
       chain.push('first')
-      yield next
+      await next()
     }
 
-    function * second (next) {
-      yield slowFn()
+    async function second (next) {
+      await slowFn()
       chain.push('second')
-      yield next
+      await next()
     }
 
-    function * third (next) {
+    async function third (next) {
       chain.push('third')
-      yield next
+      await next()
     }
 
     const pipeline = middleware.pipeline([first, second, third])
@@ -359,15 +388,50 @@ describe('Middleware', function () {
     const middlewareChain = middleware.get()
     const composedMiddleware = middleware.compose(middlewareChain)
 
-    co(function * () {
-      yield composedMiddleware()
-    }).then(() => {
+    composedMiddleware()
+    .then(() => {
       assert.deepEqual(chain, ['first', 'third', 'second'])
       done()
     }).catch(done)
   })
 
-  it('should execute multiple pipelines', function (done) {
+  test('return exception when pipeline item throws an exception', (assert, done) => {
+    assert.plan(2)
+    const middleware = new Middleware()
+    const chain = []
+
+    async function first (next) {
+      chain.push('first')
+      await next()
+    }
+
+    async function second (next) {
+      chain.push('second')
+      throw new Error('Aborted')
+    }
+
+    async function third (next) {
+      chain.push('third')
+      await next()
+    }
+
+    const pipeline = middleware.pipeline([first, second, third])
+    middleware.register(pipeline)
+
+    const middlewareChain = middleware.get()
+    const composedMiddleware = middleware.compose(middlewareChain)
+
+    composedMiddleware()
+    .then(() => {
+      done()
+    }).catch((error) => {
+      assert.equal(error.message, 'Aborted')
+      assert.deepEqual(chain, ['first', 'second', 'third'])
+      done()
+    })
+  })
+
+  test('should execute multiple pipelines', (assert, done) => {
     const middleware = new Middleware()
     const chain = []
 
@@ -379,20 +443,20 @@ describe('Middleware', function () {
       })
     }
 
-    function * first (next) {
+    async function first (next) {
       chain.push('first')
-      yield next
+      await next()
     }
 
-    function * second (next) {
-      yield slowFn()
+    async function second (next) {
+      await slowFn()
       chain.push('second')
-      yield next
+      await next()
     }
 
-    function * third (next) {
+    async function third (next) {
       chain.push('third')
-      yield next
+      await next()
     }
 
     const pipeline = middleware.pipeline([first, second, third])
@@ -402,35 +466,34 @@ describe('Middleware', function () {
     const middlewareChain = middleware.get()
     const composedMiddleware = middleware.compose(middlewareChain)
 
-    co(function * () {
-      yield composedMiddleware()
-    }).then(() => {
+    composedMiddleware()
+    .then(() => {
       assert.deepEqual(chain, ['first', 'third', 'second', 'first', 'third', 'second'])
       done()
     }).catch(done)
   })
 
-  it('should be able to pass params and bind context to all the middleware functions', function (done) {
+  test('pass params and bind context to all the pipeline functions', (assert, done) => {
     const middleware = new Middleware()
 
     class First {
-      * handle (request, next) {
+      async handle (request, next) {
         request.first = this.constructor.name
-        yield next
+        await next()
       }
     }
 
     class Second {
-      * handle (request, next) {
+      async handle (request, next) {
         request.second = this.constructor.name
-        yield next
+        await next()
       }
     }
 
     class Third {
-      * handle (request, next) {
+      async handle (request, next) {
         request.third = this.constructor.name
-        yield next
+        await next()
       }
     }
 
@@ -441,15 +504,15 @@ describe('Middleware', function () {
       const i = new Item()
       return i.handle.apply(i, params)
     }).compose(middleware.get())
-    co(function * () {
-      yield composedMiddleware()
-    }).then(() => {
+
+    composedMiddleware()
+    .then(() => {
       assert.deepEqual(request, {first: 'First', second: 'Second', third: 'Third'})
       done()
     }).catch(done)
   })
 
-  it('should run middleware parallely inside a pipeline and pass them custom params', function (done) {
+  test('run middleware parallely inside a pipeline and pass them custom params', (assert, done) => {
     const middleware = new Middleware()
 
     const slowFn = function () {
@@ -461,24 +524,24 @@ describe('Middleware', function () {
     }
 
     class First {
-      * handle (request, next) {
+      async handle (request, next) {
         request.first = this.constructor.name
-        yield next
+        await next()
       }
     }
 
     class Second {
-      * handle (request, next) {
-        yield slowFn()
+      async handle (request, next) {
+        await slowFn()
         request.second = this.constructor.name
-        yield next
+        await next()
       }
     }
 
     class Third {
-      * handle (request, next) {
+      async handle (request, next) {
         request.third = this.constructor.name
-        yield next
+        await next()
       }
     }
 
@@ -489,62 +552,30 @@ describe('Middleware', function () {
       const i = new Item()
       return i.handle.apply(i, params)
     }).compose(middleware.get())
-    co(function * () {
-      yield composedMiddleware()
-    }).then(() => {
+
+    composedMiddleware()
+    .then(() => {
       assert.deepEqual(Object.keys(request), ['first', 'third', 'second'])
       done()
     }).catch(done)
   })
 
-  it('should stop middleware chain when a method inside pipleline throws exception', function (done) {
+  test('should not call next if any of the pipeline middleware does not call next', (assert, done) => {
     const middleware = new Middleware()
     const chain = []
 
-    function * first (next) {
+    async function first (next) {
       chain.push('first')
-      yield next
+      await next()
     }
 
-    function * second (next) {
-      throw new Error('I am killed')
-      yield next
-    }
-
-    function * third (next) {
-      chain.push('third')
-      yield next
-    }
-
-    middleware.register(middleware.pipeline([first, second, third]))
-    const middlewareChain = middleware.get()
-    const composedMiddleware = middleware.compose(middlewareChain)
-
-    co(function * () {
-      yield composedMiddleware()
-    }).then(() => {
-    }).catch((error) => {
-      assert.equal(error.message, 'I am killed')
-      done()
-    })
-  })
-
-  it('should not yield next if any of the pipeline middleware does not yield next', function (done) {
-    const middleware = new Middleware()
-    const chain = []
-
-    function * first (next) {
-      chain.push('first')
-      yield next
-    }
-
-    function * second (next) {
+    async function second (next) {
       chain.push('second')
     }
 
-    function * third (next) {
+    async function third (next) {
       chain.push('third')
-      yield next
+      await next()
     }
 
     const pipeline = middleware.pipeline([first, second, third])
@@ -554,9 +585,8 @@ describe('Middleware', function () {
     const middlewareChain = middleware.get()
     const composedMiddleware = middleware.compose(middlewareChain)
 
-    co(function * () {
-      yield composedMiddleware()
-    }).then(() => {
+    composedMiddleware()
+    .then(() => {
       assert.deepEqual(chain, ['first', 'second', 'third'])
       done()
     }).catch(done)
