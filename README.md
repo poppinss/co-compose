@@ -4,6 +4,10 @@
 
 **Co compose** makes it easier for you to add the support for same style of middleware inside your applications. It features:
 
+![](https://img.shields.io/badge/requires-node%20%3E%3D7.0-blue.svg?style=flat-square)
+[![](https://img.shields.io/travis/poppinss/co-compose/master.svg?style=flat-square)](https://travis-ci.org/poppinss/co-compose)
+
+
 1. Run middleware in sequence.
 2. Pass custom `context (this)` to middleware functions.
 3. Pass arguments to middleware functions.
