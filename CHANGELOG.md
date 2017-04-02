@@ -1,3 +1,8 @@
+<a name="2.0.1"></a>
+## [2.0.1](https://github.com/poppinss/co-compose/compare/v2.0.0...v2.0.1) (2017-04-02)
+
+
+
 <a name="2.0.0"></a>
 # 2.0.0 (2017-02-24)
 
