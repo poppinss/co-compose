@@ -13,6 +13,16 @@ const _ = require('lodash')
 const Pipeline = require('./Pipeline')
 const Resetable = require('resetable')
 
+/**
+ * Middleware class is used to define an array of promises
+ * or generator functions to be called one after the other.
+ * It follows the hooks approach, where each hook is
+ * responsible for advancing the chain by calling
+ * `next`.
+ *
+ * @class Middleware
+ * @constructor
+ */
 class Middleware {
   constructor () {
     this._store = {}
@@ -22,8 +32,22 @@ class Middleware {
   }
 
   /**
-   * Calls a middleware after resolving it from the custom function
-   * or via the default fn
+   * Resolves the function/item inside the middleware
+   * chain based upon it's type. If the function is
+   * an instance of pipeline, `compose` method
+   * on pipeline will be called other the
+   * functon is executed.
+   *
+   * @method _resolveListItem
+   *
+   * @param  {Function|Object} item
+   * @param  {Array}           params
+   * @param  {Function}        fn       Function to be used for resolving each item inside chain
+   * @param  {Function}        next
+   *
+   * @return {Promise}
+   *
+   * @private
    */
   _resolveListItem (item, params, fn, next) {
     if (item instanceof Pipeline) {
@@ -34,11 +58,11 @@ class Middleware {
 
   /**
    * Set active tag to be used for registering
-   * or fetching middleware
+   * or fetching middleware.
    *
    * @param {String} tag
    *
-   * @return {Object} this for chaining
+   * @chainable
    */
   tag (tag) {
     this._activeTag.set(tag)
@@ -47,7 +71,8 @@ class Middleware {
 
   /**
    * Register an array of middleware or a pipeline
-   * of middleware.
+   * of middleware. Calling this method for multiple
+   * times will concat the to existing list.
    *
    * @param {Array|Pipeline}
    *
@@ -89,8 +114,10 @@ class Middleware {
   }
 
   /**
-   * An optional function to be called when
-   * resolving middleware.
+   * An optional function to be called when resolving middleware.
+   * The callback will be invoked for each function inside the
+   * middleware chain. This is the best place to convert the
+   * function/object into something else at runtime.
    *
    * @param {Function} fn
    *
@@ -108,7 +135,7 @@ class Middleware {
    *
    * @method compose
    *
-   * @param  {Array} [list]
+   * @param  {Array} [list = this.get()]
    *
    * @return {Function}
    */
@@ -142,7 +169,11 @@ class Middleware {
   }
 
   /**
-   * Returns a new instance of pipeline
+   * Returns a new instance of pipeline.
+   *
+   * @method pipeline
+   *
+   * @param  {Array} middleware
    *
    * @return {Pipeline}
    */

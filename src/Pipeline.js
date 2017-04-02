@@ -11,13 +11,45 @@
 
 const Counter = require('../lib/Counter')
 
+/**
+ * Pipeline is a subset of middleware, where all methods
+ * are executed in parallel. Still all methods have to
+ * call `next` so that when the pipeline is over the
+ * next middleware gets executed.
+ *
+ * ## Note
+ * Pipeline should be used for middleware with no side-effects.
+ * For example: If your middleware returns the response or
+ * ends the chain, you should never add it to a pipeline.
+ *
+ * Classic example of pipeline middleware are.
+ * 1. Read cookies/session
+ * 2. Fetching authenticated user.
+ * 3. Decorating request object etc.
+ *
+ * @class Pipeline
+ * @constructor
+ */
 class Pipeline {
-
   constructor (middleware) {
     this._middleware = middleware
     this._counter = new Counter(0)
   }
 
+  /**
+   * Noop is used the next method for the pipeline
+   * middleware. Calling this method will increment
+   * a counter telling the pipeline that all methods
+   * have called next.
+   *
+   * @method _noop
+   *
+   * @param  {Object} counter
+   *
+   * @return {AsyncFunction}
+   *
+   * @private
+   */
   _noop (counter) {
     return async function () {
       counter.inc()
@@ -45,6 +77,11 @@ class Pipeline {
 
     return async function (next) {
       await Promise.all(map)
+      /**
+       * Only call next when all middleware inside pipeline
+       * have called next. Otherwise some middleware has
+       * intentions of returning early.
+       */
       if (self._counter.get() === self._middleware.length) {
         await next()
       }

@@ -624,4 +624,37 @@ test.group('Middleware | Async', () => {
       done()
     }).catch(done)
   })
+
+  test('calls after await in pipeline middleware should not await', (assert, done) => {
+    assert.plan(1)
+    const middleware = new Middleware()
+    const chain = []
+    async function first (next) {
+      chain.push('first')
+      await next()
+      chain.push('first after')
+    }
+
+    async function second (next) {
+      chain.push('second')
+      await next()
+      chain.push('second after')
+    }
+
+    async function third (next) {
+      chain.push('third')
+      await next()
+      chain.push('third after')
+    }
+
+    middleware.register(middleware.pipeline([first, second, third]))
+    const middlewareChain = middleware.get()
+    const composedMiddleware = middleware.compose(middlewareChain)
+
+    composedMiddleware()
+    .then(() => {
+      assert.deepEqual(chain, ['first', 'second', 'third', 'first after', 'second after', 'third after'])
+      done()
+    }).catch(done)
+  })
 })

@@ -9,8 +9,8 @@
   "scripts": {
     "lint": "standard",
     "pretest": "npm run lint",
-    "test": "node --harmony-async-await test/middleware.spec.js",
-    "coverage": "node --harmony-async-await ./node_modules/.bin/istanbul cover test/middleware.spec.js"
+    "test": "node --harmony-async-await ./node_modules/.bin/japa",
+    "coverage": "./node_modules/.bin/nyc npm test --reporter=text-lcov"
   },
   "keywords": [
     "adonisjs",
@@ -24,6 +24,8 @@
   "devDependencies": {
     "istanbul": "^1.1.0-alpha.1",
     "japa": "^1.0.1",
+    "japa-cli": "^1.0.0",
+    "nyc": "^10.2.0",
     "standard": "^8.6.0"
   },
   "dependencies": {
