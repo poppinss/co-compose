@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
 */
 
-const Counter = require('../lib/Counter')
+const Counter = require('./Counter')
 
 /**
  * Pipeline is a subset of middleware, where all methods

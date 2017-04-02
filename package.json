@@ -9,8 +9,11 @@
   "scripts": {
     "lint": "standard",
     "pretest": "npm run lint",
-    "test": "node --harmony-async-await ./node_modules/.bin/japa",
-    "coverage": "./node_modules/.bin/nyc npm test --reporter=text-lcov"
+    "posttest": "npm run coverage",
+    "test:local": "node --harmony-async-await ./node_modules/.bin/japa",
+    "test": "./node_modules/.bin/nyc npm run test:local",
+    "test:win": "npm run test:local",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "keywords": [
     "adonisjs",
@@ -22,6 +25,7 @@
   "author": "amanvirk,adonisjs",
   "license": "MIT",
   "devDependencies": {
+    "coveralls": "^2.13.0",
     "istanbul": "^1.1.0-alpha.1",
     "japa": "^1.0.1",
     "japa-cli": "^1.0.0",

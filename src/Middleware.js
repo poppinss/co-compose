@@ -15,10 +15,9 @@ const Resetable = require('resetable')
 
 /**
  * Middleware class is used to define an array of promises
- * or generator functions to be called one after the other.
- * It follows the hooks approach, where each hook is
- * responsible for advancing the chain by calling
- * `next`.
+ * to be called one after the other. It follows the hooks
+ * approach, where each hook is responsible for advancing
+ * the chain by calling `next`.
  *
  * @class Middleware
  * @constructor
