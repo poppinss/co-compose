@@ -26,6 +26,7 @@
   "license": "MIT",
   "devDependencies": {
     "coveralls": "^2.13.0",
+    "cz-conventional-changelog": "^2.0.0",
     "istanbul": "^1.1.0-alpha.1",
     "japa": "^1.0.1",
     "japa-cli": "^1.0.0",
@@ -35,5 +36,10 @@
   "dependencies": {
     "lodash": "^4.17.2",
     "resetable": "^1.0.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
