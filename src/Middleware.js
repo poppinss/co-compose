@@ -145,9 +145,9 @@ class Middleware {
     const resolveFn = this._resolveFn.pull()
     const resolveListItem = this._resolveListItem
 
-    return async function () {
+    return function () {
       return dispatch(0)
-      async function dispatch (index) {
+      function dispatch (index) {
         const item = list[index]
 
         /**
@@ -162,7 +162,7 @@ class Middleware {
          * a same middleware are ignored.
          */
         const next = _.once(() => dispatch(index + 1))
-        return await resolveListItem(item, params, resolveFn, next)
+        return resolveListItem(item, params, resolveFn, next)
       }
     }
   }
