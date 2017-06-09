@@ -1,20 +1,13 @@
 # Co Compose
 
-[Koa](http://koajs.com/) and [AdonisJs](http://adonisjs.com/) style middleware are super neat since they allow you to create a chain of **Async/Await** functions and write maintainable async code.
-
-<br />
-
-
 [![NPM Version][npm-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
 [![Downloads Stats][npm-downloads]][npm-url]
 [![Appveyor][appveyor-image]][appveyor-url]
 
-<br />
+<br>
 
----
-
-<br />
+> [Koa](http://koajs.com/) and [AdonisJs](http://adonisjs.com/) style middleware are super neat since they allow you to create a chain of **Async/Await** functions and write maintainable async code.
 
 **Co compose** makes it easier for you to add the support for same style of middleware inside your applications. It features:
 
@@ -168,13 +161,16 @@ middleware.tag('ws').compose()
 ```
 
 
-[appveyor-image]: https://ci.appveyor.com/api/projects/status/github/poppinss/co-compose?branch=master&svg=true&passingText=Passing%20On%20Windows
+[appveyor-image]: https://img.shields.io/appveyor/ci/thetutlage/co-compose/develop.svg?style=flat-square
+
 [appveyor-url]: https://ci.appveyor.com/project/thetutlage/co-compose
 
 [npm-image]: https://img.shields.io/npm/v/co-compose.svg?style=flat-square
+
 [npm-url]: https://npmjs.org/package/co-compose
 
 [travis-image]: https://img.shields.io/travis/poppinss/co-compose/master.svg?style=flat-square
+
 [travis-url]: https://travis-ci.org/poppinss/co-compose
 
 [npm-downloads]: https://img.shields.io/npm/dm/co-compose.svg?style=flat-square
