@@ -11,6 +11,11 @@
 
 const test = require('japa')
 const Middleware = require('../index')
+const sleep = function (timeout) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, timeout)
+  })
+}
 
 test.group('Middleware | Async', () => {
   test('should be able to register middleware to the middleware store', (assert) => {
@@ -654,6 +659,40 @@ test.group('Middleware | Async', () => {
     composedMiddleware()
     .then(() => {
       assert.deepEqual(chain, ['first', 'second', 'third', 'first after', 'second after', 'third after'])
+      done()
+    }).catch(done)
+  })
+
+  test('params should not collide with each other', (assert, done) => {
+    const middleware = new Middleware()
+    async function first (request, next) {
+      request.count++
+      await next()
+    }
+
+    async function second (request, next) {
+      request.count++
+      await sleep(500)
+      await next()
+    }
+
+    async function third (request, next) {
+      request.count++
+      await next()
+    }
+
+    middleware.register([first, second, third])
+
+    const request = { count: 0 }
+    const otherRequest = { count: 0 }
+    const middlewareChain = middleware.get()
+    const composedMiddleware = middleware.withParams(request).compose(middlewareChain)
+    const composedMiddleware2 = middleware.withParams(otherRequest).compose(middlewareChain)
+
+    Promise.all([composedMiddleware(), composedMiddleware2()])
+    .then(() => {
+      assert.equal(request.count, 3)
+      assert.equal(otherRequest.count, 3)
       done()
     }).catch(done)
   })

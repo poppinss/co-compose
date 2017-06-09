@@ -140,7 +140,6 @@ class Middleware {
    */
   compose (list) {
     list = list || this.get()
-
     const params = this._params.pull()
     const resolveFn = this._resolveFn.pull()
     const resolveListItem = this._resolveListItem
