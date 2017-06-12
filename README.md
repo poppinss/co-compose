@@ -42,7 +42,7 @@ async function fn3 (next) {
 }
 
 // Compose middleware
-const composedMiddleware = middleware.compose([fn1, fn2, fn3])
+const composedMiddleware = middleware.runner([fn1, fn2, fn3]).compose()
 
 composedMiddleware()
 .then(() => {
@@ -79,8 +79,9 @@ async function fn3 (hash, next) {
 // Compose middleware with params
 const hash = {}
 const composedMiddleware = middleware
+  .runner([fn1, fn2, fn3])
   .withParams(hash)
-  .compose([fn1, fn2, fn3])
+  .compose()
 
 composedMiddleware()
 .then(() => {
@@ -116,12 +117,13 @@ const req = {}
 const res = {}
 
 const composedMiddleware = middleware
+  .runner([Foo, Bar])
   .resolve((M, params) => {
     const middlewareInstance = new M()
     return middlewareInstance.handle.apply(middlewareInstance, params)
   })
   .withParams(req, res)
-  .compose([Foo, Bar])
+  .compose()
 ```
 
 ## Using Middleware Store
@@ -143,7 +145,7 @@ async function fn2 (req, res, next) {
 middleware.register([fn1, fn2])
 
 // and later compose
-middleware.withParams(req, res).compose()
+middleware.runner().withParams(req, res).compose()
 ```
 
 ## Tag middleware
@@ -156,8 +158,8 @@ const middleware = new Middleware()
 middleware.tag('http').register([fn1, fn2])
 middleware.tag('ws').register([ws1, ws2])
 
-middleware.tag('http').compose()
-middleware.tag('ws').compose()
+middleware.tag('http').runner().compose()
+middleware.tag('ws').runner().compose()
 ```
 
 
