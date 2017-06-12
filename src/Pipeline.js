@@ -75,16 +75,14 @@ class Pipeline {
     const noop = this._noop(this._counter)
     const map = this._middleware.map((item) => composeFn(item, params.concat([noop])))
 
-    return async function (next) {
-      await Promise.all(map)
-      /**
-       * Only call next when all middleware inside pipeline
-       * have called next. Otherwise some middleware has
-       * intentions of returning early.
-       */
-      if (self._counter.get() === self._middleware.length) {
-        await next()
-      }
+    return function (next) {
+      return Promise
+        .all(map)
+        .then(() => {
+          if (self._counter.get() === self._middleware.length) {
+            return next()
+          }
+        })
     }
   }
 }

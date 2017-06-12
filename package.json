@@ -1,6 +1,6 @@
 {
   "name": "co-compose",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Adonis and koa style middleware layer with ability to run parallel middleware",
   "main": "index.js",
   "directories": {
@@ -10,9 +10,9 @@
     "lint": "standard",
     "pretest": "npm run lint",
     "posttest": "npm run coverage",
-    "test:local": "node --harmony-async-await ./node_modules/.bin/japa",
+    "test:local": "FORCE_COLOR=true node bin/index.js --local",
     "test": "./node_modules/.bin/nyc npm run test:local",
-    "test:win": "node --harmony-async-await ./node_modules/japa-cli/index.js",
+    "test:win": "set FORCE_COLOR=true && node bin/index.js --win",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "keywords": [
@@ -25,21 +25,26 @@
   "author": "amanvirk,adonisjs",
   "license": "MIT",
   "devDependencies": {
-    "coveralls": "^2.13.0",
+    "coveralls": "^2.13.1",
     "cz-conventional-changelog": "^2.0.0",
     "istanbul": "^1.1.0-alpha.1",
     "japa": "^1.0.3",
     "japa-cli": "^1.0.1",
-    "nyc": "^10.2.0",
-    "standard": "^9.0.2"
+    "nyc": "^11.0.2",
+    "standard": "^10.0.2"
   },
   "dependencies": {
     "lodash": "^4.17.4",
-    "resetable": "^1.0.0"
+    "resetable": "^1.0.2"
   },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
+  },
+  "nyc": {
+    "include": [
+      "src"
+    ]
   }
 }

@@ -1,20 +1,13 @@
 # Co Compose
 
-[Koa](http://koajs.com/) and [AdonisJs](http://adonisjs.com/) style middleware are super neat since they allow you to create a chain of **Async/Await** functions and write maintainable async code.
-
-<br />
-
-
 [![NPM Version][npm-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
 [![Downloads Stats][npm-downloads]][npm-url]
 [![Appveyor][appveyor-image]][appveyor-url]
 
-<br />
+<br>
 
----
-
-<br />
+> [Koa](http://koajs.com/) and [AdonisJs](http://adonisjs.com/) style middleware are super neat since they allow you to create a chain of **Async/Await** functions and write maintainable async code.
 
 **Co compose** makes it easier for you to add the support for same style of middleware inside your applications. It features:
 
@@ -49,7 +42,7 @@ async function fn3 (next) {
 }
 
 // Compose middleware
-const composedMiddleware = middleware.compose([fn1, fn2, fn3])
+const composedMiddleware = middleware.runner([fn1, fn2, fn3]).compose()
 
 composedMiddleware()
 .then(() => {
@@ -86,8 +79,9 @@ async function fn3 (hash, next) {
 // Compose middleware with params
 const hash = {}
 const composedMiddleware = middleware
+  .runner([fn1, fn2, fn3])
   .withParams(hash)
-  .compose([fn1, fn2, fn3])
+  .compose()
 
 composedMiddleware()
 .then(() => {
@@ -123,12 +117,13 @@ const req = {}
 const res = {}
 
 const composedMiddleware = middleware
+  .runner([Foo, Bar])
   .resolve((M, params) => {
     const middlewareInstance = new M()
     return middlewareInstance.handle.apply(middlewareInstance, params)
   })
   .withParams(req, res)
-  .compose([Foo, Bar])
+  .compose()
 ```
 
 ## Using Middleware Store
@@ -150,7 +145,7 @@ async function fn2 (req, res, next) {
 middleware.register([fn1, fn2])
 
 // and later compose
-middleware.withParams(req, res).compose()
+middleware.runner().withParams(req, res).compose()
 ```
 
 ## Tag middleware
@@ -163,18 +158,21 @@ const middleware = new Middleware()
 middleware.tag('http').register([fn1, fn2])
 middleware.tag('ws').register([ws1, ws2])
 
-middleware.tag('http').compose()
-middleware.tag('ws').compose()
+middleware.tag('http').runner().compose()
+middleware.tag('ws').runner().compose()
 ```
 
 
-[appveyor-image]: https://ci.appveyor.com/api/projects/status/github/poppinss/co-compose?branch=master&svg=true&passingText=Passing%20On%20Windows
+[appveyor-image]: https://img.shields.io/appveyor/ci/thetutlage/co-compose/develop.svg?style=flat-square
+
 [appveyor-url]: https://ci.appveyor.com/project/thetutlage/co-compose
 
 [npm-image]: https://img.shields.io/npm/v/co-compose.svg?style=flat-square
+
 [npm-url]: https://npmjs.org/package/co-compose
 
 [travis-image]: https://img.shields.io/travis/poppinss/co-compose/master.svg?style=flat-square
+
 [travis-url]: https://travis-ci.org/poppinss/co-compose
 
 [npm-downloads]: https://img.shields.io/npm/dm/co-compose.svg?style=flat-square
