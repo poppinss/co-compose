@@ -10,7 +10,7 @@
 */
 
 const test = require('japa')
-const Middleware = require('../index')
+const Middleware = require('../src/Middleware')
 const sleep = function (timeout) {
   return new Promise((resolve) => {
     setTimeout(resolve, timeout)
@@ -59,7 +59,7 @@ test.group('Middleware | Async', () => {
 
     middleware.register([first, second, third])
     const middlewareChain = middleware.get()
-    const composedMiddleware = middleware.compose(middlewareChain)
+    const composedMiddleware = middleware.runner(middlewareChain).compose()
 
     composedMiddleware()
     .then(() => {
@@ -99,7 +99,7 @@ test.group('Middleware | Async', () => {
 
     middleware.register([first, second, third])
     const middlewareChain = middleware.get()
-    const composedMiddleware = middleware.compose(middlewareChain)
+    const composedMiddleware = middleware.runner(middlewareChain).compose()
 
     composedMiddleware()
     .then(() => {
@@ -129,7 +129,7 @@ test.group('Middleware | Async', () => {
 
     middleware.register([first, second, third])
     const middlewareChain = middleware.get()
-    const composedMiddleware = middleware.compose(middlewareChain)
+    const composedMiddleware = middleware.runner(middlewareChain).compose()
 
     composedMiddleware()
     .catch((error) => {
@@ -164,12 +164,12 @@ test.group('Middleware | Async', () => {
     middleware.register([first, second, third])
 
     const middlewareChain = middleware.get()
-    const composedMiddleware = middleware.resolve(function (item, params) {
+    const composedMiddleware = middleware.runner(middlewareChain).resolve(function (item, params) {
       if (item.name === 'second') {
         return item.apply(new Foo(), params)
       }
       return item.apply(null, params)
-    }).compose(middlewareChain)
+    }).compose()
 
     composedMiddleware()
     .then(() => {
@@ -201,7 +201,7 @@ test.group('Middleware | Async', () => {
 
     const request = {}
     const middlewareChain = middleware.get()
-    const composedMiddleware = middleware.withParams(request).compose(middlewareChain)
+    const composedMiddleware = middleware.runner(middlewareChain).withParams(request).compose()
 
     composedMiddleware()
     .then(() => {
@@ -232,8 +232,8 @@ test.group('Middleware | Async', () => {
 
     const request = {}
     const request1 = {one: true}
-    const composedMiddleware = middleware.withParams(request).compose(middleware.get())
-    const composedMiddleware1 = middleware.withParams(request1).compose(middleware.get())
+    const composedMiddleware = middleware.runner(middleware.get()).withParams(request).compose()
+    const composedMiddleware1 = middleware.runner(middleware.get()).withParams(request1).compose()
 
     Promise
     .all([composedMiddleware(), composedMiddleware1()])
@@ -270,10 +270,10 @@ test.group('Middleware | Async', () => {
 
     middleware.register([First, Second, Third])
     const request = {}
-    const composedMiddleware = middleware.withParams(request).resolve(function (Item, params) {
+    const composedMiddleware = middleware.runner(middleware.get()).withParams(request).resolve(function (Item, params) {
       const i = new Item()
       return i.handle.apply(i, params)
-    }).compose(middleware.get())
+    }).compose()
 
     composedMiddleware()
     .then(() => {
@@ -304,7 +304,7 @@ test.group('Middleware | Async', () => {
     }
 
     middleware.register([first, second, third])
-    const composedMiddleware = middleware.compose()
+    const composedMiddleware = middleware.runner().compose()
 
     composedMiddleware()
     .then(() => {
@@ -350,7 +350,7 @@ test.group('Middleware | Async', () => {
     middleware.register(pipeline)
 
     const middlewareChain = middleware.get()
-    const composedMiddleware = middleware.compose(middlewareChain)
+    const composedMiddleware = middleware.runner(middlewareChain).compose()
 
     composedMiddleware()
     .then(() => {
@@ -391,7 +391,7 @@ test.group('Middleware | Async', () => {
     middleware.register(pipeline)
 
     const middlewareChain = middleware.get()
-    const composedMiddleware = middleware.compose(middlewareChain)
+    const composedMiddleware = middleware.runner(middlewareChain).compose()
 
     composedMiddleware()
     .then(() => {
@@ -424,7 +424,7 @@ test.group('Middleware | Async', () => {
     middleware.register(pipeline)
 
     const middlewareChain = middleware.get()
-    const composedMiddleware = middleware.compose(middlewareChain)
+    const composedMiddleware = middleware.runner(middlewareChain).compose()
 
     composedMiddleware()
     .then(() => {
@@ -469,7 +469,7 @@ test.group('Middleware | Async', () => {
     middleware.register([pipeline, pipeline1])
 
     const middlewareChain = middleware.get()
-    const composedMiddleware = middleware.compose(middlewareChain)
+    const composedMiddleware = middleware.runner(middlewareChain).compose()
 
     composedMiddleware()
     .then(() => {
@@ -505,10 +505,14 @@ test.group('Middleware | Async', () => {
     middleware.register(middleware.pipeline([First, Second, Third]))
     const request = {}
 
-    const composedMiddleware = middleware.withParams(request).resolve(function (Item, params) {
-      const i = new Item()
-      return i.handle.apply(i, params)
-    }).compose(middleware.get())
+    const composedMiddleware = middleware
+      .runner(middleware.get())
+      .withParams(request)
+      .resolve(function (Item, params) {
+        const i = new Item()
+        return i.handle.apply(i, params)
+      })
+      .compose()
 
     composedMiddleware()
     .then(() => {
@@ -553,10 +557,14 @@ test.group('Middleware | Async', () => {
     middleware.register(middleware.pipeline([First, Second, Third]))
     const request = {}
 
-    const composedMiddleware = middleware.withParams(request).resolve(function (Item, params) {
-      const i = new Item()
-      return i.handle.apply(i, params)
-    }).compose(middleware.get())
+    const composedMiddleware = middleware
+      .runner(middleware.get())
+      .withParams(request)
+      .resolve(function (Item, params) {
+        const i = new Item()
+        return i.handle.apply(i, params)
+      })
+      .compose()
 
     composedMiddleware()
     .then(() => {
@@ -588,7 +596,7 @@ test.group('Middleware | Async', () => {
     middleware.register([pipeline, pipeline1])
 
     const middlewareChain = middleware.get()
-    const composedMiddleware = middleware.compose(middlewareChain)
+    const composedMiddleware = middleware.runner(middlewareChain).compose()
 
     composedMiddleware()
     .then(() => {
@@ -621,7 +629,7 @@ test.group('Middleware | Async', () => {
 
     middleware.register([first, second, third])
     const middlewareChain = middleware.get()
-    const composedMiddleware = middleware.compose(middlewareChain)
+    const composedMiddleware = middleware.runner(middlewareChain).compose()
 
     composedMiddleware()
     .then(() => {
@@ -654,7 +662,7 @@ test.group('Middleware | Async', () => {
 
     middleware.register(middleware.pipeline([first, second, third]))
     const middlewareChain = middleware.get()
-    const composedMiddleware = middleware.compose(middlewareChain)
+    const composedMiddleware = middleware.runner(middlewareChain).compose()
 
     composedMiddleware()
     .then(() => {
@@ -686,8 +694,8 @@ test.group('Middleware | Async', () => {
     const request = { count: 0 }
     const otherRequest = { count: 0 }
     const middlewareChain = middleware.get()
-    const composedMiddleware = middleware.withParams(request).compose(middlewareChain)
-    const composedMiddleware2 = middleware.withParams(otherRequest).compose(middlewareChain)
+    const composedMiddleware = middleware.runner(middlewareChain).withParams(request).compose()
+    const composedMiddleware2 = middleware.runner(middlewareChain).withParams(otherRequest).compose()
 
     Promise.all([composedMiddleware(), composedMiddleware2()])
     .then(() => {
