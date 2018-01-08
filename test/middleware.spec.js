@@ -704,4 +704,23 @@ test.group('Middleware | Async', () => {
       done()
     }).catch(done)
   })
+
+  test('run fine when methods are not async and neither returns promise', (assert, done) => {
+    assert.plan(1)
+    const middleware = new Middleware()
+    const chain = []
+    function first () {
+      chain.push('first')
+    }
+
+    middleware.register([first])
+    const middlewareChain = middleware.get()
+    const composedMiddleware = middleware.runner(middlewareChain).compose()
+
+    composedMiddleware()
+    .then(() => {
+      assert.deepEqual(chain, ['first'])
+      done()
+    }).catch(done)
+  })
 })

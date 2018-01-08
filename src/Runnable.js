@@ -47,7 +47,7 @@ class Runnable {
     if (item instanceof Pipeline) {
       return item.compose(params, fn)(next)
     }
-    return fn(item, params.concat(next))
+    return Promise.resolve(fn(item, params.concat(next)))
   }
 
   /**
