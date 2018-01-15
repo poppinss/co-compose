@@ -1,178 +1,192 @@
 # Co Compose
 
+> Compose an array of functions to be executed one after the other. Similar to Koa and AdonisJs.
+
 [![NPM Version][npm-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
 [![Downloads Stats][npm-downloads]][npm-url]
 [![Appveyor][appveyor-image]][appveyor-url]
 
-<br>
+Co compose composes an array of middleware to be executed in sequence. The library is framework independent and can be used in any Javascript project.
 
-> [Koa](http://koajs.com/) and [AdonisJs](http://adonisjs.com/) style middleware are super neat since they allow you to create a chain of **Async/Await** functions and write maintainable async code.
+## Pattern
 
-**Co compose** makes it easier for you to add the support for same style of middleware inside your applications. It features:
+It follows the middleware pattern with following traits.
 
-1. Run middleware in sequence.
-2. Pass custom `context (this)` to middleware functions.
-3. Pass arguments to middleware functions.
-4. Parallely execute middleware by wrapping them inside a pipeline.
-5. Store middleware inside a middleware and tag them for later use.
+1. Each method is called in sequence after `next` is called.
+2. If `next` is not called, the middleware chain will short-circuit and resolves right away.
+3. Any middleware function can break the chain by throwing an exception.
+4. All middleware functions after `next` call are executed in reverse order.
 
-## Basic Example
-
-```javascript
-const co = require('co')
-const Middleware = require('co-compose')
+```js
 const middleware = new Middleware()
 
-const chain = []
+const logs = []
 
-async function fn1 (next) {
-  chain.push('fn1')
+async function first (next) {
+  logs.push('first')
   await next()
+  logs.push('first: in reverse')
 }
 
-async function fn2 (next) {
-  chain.push('fn2')
+async function second (next) {
+  logs.push('second')
   await next()
+  logs.push('second: in reverse')
 }
 
-async function fn3 (next) {
-  chain.push('fn3')
+async function third (next) {
+  logs.push('third')
   await next()
+  logs.push('third: in reverse')
 }
 
-// Compose middleware
-const composedMiddleware = middleware.runner([fn1, fn2, fn3]).compose()
+middleware.register([first, second, third])
 
-composedMiddleware()
-.then(() => {
-  assert.deepEqual(chain, ['fn1', 'fn2', 'fn3'])
-})
+await middleware.runner().run()
+assert.deepEqual(logs, [
+  'first',
+  'second',
+  'third',
+  'third: in reverse',
+  'second: in reverse',
+  'first: in reverse'
+])
 ```
 
-## Passing Custom Params
-Quite often you will be required to pass custom parameters to all the middleware functions. Same can be done using `withParams` method.
 
-```javascript
-const co = require('co')
+## Usage
+
+Start by importing the library and instantiating a new instance of it.
+
+```js
 const Middleware = require('co-compose')
 const middleware = new Middleware()
-
-async function fn1 (hash, next) {
-  hash.fn1 = true
-  chain.push('fn1')
-  await next()
-}
-
-async function fn2 (hash, next) {
-  hash.fn2 = true
-  chain.push('fn2')
-  await next()
-}
-
-async function fn3 (hash, next) {
-  hash.fn3 = true
-  chain.push('fn3')
-  await next()
-}
-
-// Compose middleware with params
-const hash = {}
-const composedMiddleware = middleware
-  .runner([fn1, fn2, fn3])
-  .withParams(hash)
-  .compose()
-
-composedMiddleware()
-.then(() => {
-  assert.deepEqual(hash, {fn1: true, fn2: true, fn3: true})
-})
 ```
 
-## Transform Functions On Fly
-At times middleware are not plain functions. For example: [AdonisJs Middleware](http://adonisjs.com/docs/3.1/middleware#_creating_a_middleware) is a fully qualified **ES2015** class and it's instance should be created on fly.
+Next, register the middleware functions.
 
-```javascript
-const co = require('co')
-const Middleware = require('co-compose')
-const middleware = new Middleware()
-
-class Foo {
-
-  async handle (req, res, next) {
+```js
+middleware.register([
+  async function (next) {
+    await next()
+  },
+  async function (next) {
     await next()
   }
+])
+```
 
-}
+Pull an instance of middleware runner to executed the **registered middleware**.
 
-class Bar {
+```js
+const runner = middleware.runner()
 
-  async handle (res, res, next) {
-    await next()
-  }
-
-}
-
-const req = {}
-const res = {}
-
-const composedMiddleware = middleware
-  .runner([Foo, Bar])
-  .resolve((M, params) => {
-    const middlewareInstance = new M()
-    return middlewareInstance.handle.apply(middlewareInstance, params)
+runner
+  .run()
+  .then(() => {
+    console.log('middleware executed')
   })
-  .withParams(req, res)
-  .compose()
+  .catch((error) => {
+    console.log(error)
+  })
 ```
 
-## Using Middleware Store
-Apart from composing middleware, you can also store middleware that can be referenced/composed later.
+### Passing data along
+A common use case of middleware is the HTTP request lifecycle. Let's see how we to pass the `req` and `res` objects to the middleware functions.
 
-```javascript
-const Middleware = require('co-compose')
-const middleware = new Middleware()
+```js
+const http = require('http')
+const middleware = new (require('co-compose'))()
 
-async function fn1 (req, res, next) {
-  await next()
-}
+middleware.register([
+  async function (req, res, next) {
+    req.greeting = 'Hello world'
+    await next()
+  },
 
-async function fn2 (req, res, next) {
-  await next()
-}
+  async function (req, res, next) {
+    res.write(req.greeting)
+    await next()
+  }
+])
 
-// register
+http.createServer(async function (req, res) {
+  const runner = middleware.runner()
+
+  // passing data
+  runner.params([req, res])
+
+  runner
+    .run()
+    .then(() => {
+      res.end()
+    })
+    .catch((error) => {
+      res.end(error.message)
+    })
+}).listen(3000)
+```
+
+The `params` method accepts an array of values as pass them as arguments to the middleware.
+
+## Middleware API
+
+#### register([fns])
+An array of functions to be executed as middleware. Calling this method for multiple times, will concat to the existing list.
+
+```js
 middleware.register([fn1, fn2])
-
-// and later compose
-middleware.runner().withParams(req, res).compose()
 ```
 
-## Tag middleware
-If your application makes use of middleware at different places, it will be a nice to tag middleware when storing them. For example: Storing middleware for HTTP requests and for Websockets requests
+#### runner()
+Returns an instance of runner with the registered middleware.
 
-```javascript
-const Middleware = require('co-compose')
-const middleware = new Middleware()
-
-middleware.tag('http').register([fn1, fn2])
-middleware.tag('ws').register([ws1, ws2])
-
-middleware.tag('http').runner().compose()
-middleware.tag('ws').runner().compose()
+```js
+middleware
+  .runner()
+  .run()
+  .then(console.log)
+  .catch(console.error)
 ```
 
+## Runner API
+
+#### params([values])
+An array of values to be passed to the middleware functions as arguments. Each value inside array is passed as a seperate argument.
+
+```js
+const runner = middleware.runner()
+runner.params([req, res])
+```
+
+#### run() -> Promise
+Execute the middleware chain
+
+```js
+const runner = middleware.runner()
+
+runner
+  .run()
+  .then(console.log)
+  .catch(console.error)
+```
+
+#### concat([fns])
+Concat middleware functions just before executing them. This method is useful when middleware list is known at runtime.
+
+```js
+const runner = middleware.runner()
+runner.concat([fn3, fn4])
+```
 
 [appveyor-image]: https://img.shields.io/appveyor/ci/thetutlage/co-compose/develop.svg?style=flat-square
-
 [appveyor-url]: https://ci.appveyor.com/project/thetutlage/co-compose
 
 [npm-image]: https://img.shields.io/npm/v/co-compose.svg?style=flat-square
-
 [npm-url]: https://npmjs.org/package/co-compose
+[npm-downloads]: https://img.shields.io/npm/dm/co-compose.svg?style=flat-square
 
 [travis-image]: https://img.shields.io/travis/poppinss/co-compose/master.svg?style=flat-square
-
 [travis-url]: https://travis-ci.org/poppinss/co-compose
 
-[npm-downloads]: https://img.shields.io/npm/dm/co-compose.svg?style=flat-square

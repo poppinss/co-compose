@@ -1,3 +1,13 @@
+<a name="4.0.0"></a>
+# [4.0.0](https://github.com/poppinss/co-compose/compare/v3.0.1...v4.0.0) (2018-01-15)
+
+
+### Features
+
+* semi-rewrite for simplicity and performance ([8f27acf](https://github.com/poppinss/co-compose/commit/8f27acf))
+
+
+
 <a name="3.0.1"></a>
 ## [3.0.1](https://github.com/poppinss/co-compose/compare/v3.0.0...v3.0.1) (2018-01-08)
 

@@ -1,11 +1,12 @@
 {
   "name": "co-compose",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "description": "Adonis and koa style middleware layer with ability to run parallel middleware",
   "main": "index.js",
   "directories": {
     "test": "test"
   },
+  "files": ["src"],
   "scripts": {
     "lint": "standard",
     "pretest": "npm run lint",
@@ -34,8 +35,7 @@
     "standard": "^10.0.3"
   },
   "dependencies": {
-    "lodash": "^4.17.4",
-    "resetable": "^1.0.3"
+    "once": "^1.4.0"
   },
   "config": {
     "commitizen": {

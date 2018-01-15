@@ -9,109 +9,138 @@
  * file that was distributed with this source code.
 */
 
-const _ = require('lodash')
-const Pipeline = require('./Pipeline')
+const once = require('once')
 
 /**
- * Runnable class is responsible for running the middleware
- * stack in sequenece
+ * Executes a function and passes all params to it
+ * as a spread operator
  *
- * @class Runnable
+ * @method resolveItem
+ *
+ * @param  {Function}    item
+ * @param  {Array}    params
+ *
+ * @return {Promise}
  */
+function resolveItem (item, params) {
+  if (typeof (item) !== 'function') {
+    return Promise.reject(new Error('make sure all middleware values are valid functions'))
+  }
+  try {
+    return item(...params)
+  } catch (error) {
+    return Promise.reject(error)
+  }
+}
+
 class Runnable {
   constructor (list) {
     this._list = list
     this._params = []
-    this._resolveFn = (item, params) => item(...params)
+    this._resolveFn = null
   }
 
   /**
-   * Resolves the function/item inside the middleware
-   * chain based upon it's type. If the function is
-   * an instance of pipeline, `compose` method
-   * on pipeline will be called other the
-   * functon is executed.
+   * Invokes the item inside the runnable list
+   * for a given index.
    *
-   * @method _resolveListItem
+   * @method _invoke
    *
-   * @param  {Function|Object} item
-   * @param  {Array}           params
-   * @param  {Function}        fn       Function to be used for resolving each item inside chain
-   * @param  {Function}        next
+   * @param  {Array} list
+   * @param  {Number} index
    *
    * @return {Promise}
    *
    * @private
    */
-  _resolveListItem (item, params, fn, next) {
-    if (item instanceof Pipeline) {
-      return item.compose(params, fn)(next)
+  _invoke (index) {
+    const item = this._list[index]
+
+    /**
+     * Nothing is left, resolve with an empty promise
+     */
+    if (!item) {
+      return Promise.resolve()
     }
-    return Promise.resolve(fn(item, params.concat(next)))
+
+    /**
+     * The next method that advanced the middleware
+     * chain. If this method is not called, the
+     * runnable will resolve right away.
+     *
+     * Also multiple calls to the same function are ignored.
+     */
+    const next = once(() => this._invoke(index + 1))
+    const params = this._params.concat(next)
+
+    const value = this._resolveFn ? this._resolveFn(item, params) : resolveItem(item, params)
+    return Promise.resolve(value)
   }
 
   /**
-   * Params to be passed when composing the
-   * middleware list.
+   * Params to be sent to each middleware function
    *
-   * @param {Spread}
+   * @method params
    *
-   * @return {Object} this for chaining
+   * @param  {Array}   params
+   *
+   * @chainable
    */
-  withParams (params) {
-    this._params = _.castArray(params)
+  params (params) {
+    if (!Array.isArray(params)) {
+      throw new Error('runnable.params accepts an array as the first argument')
+    }
+
+    this._params = params
     return this
   }
 
   /**
-   * An optional function to be called when resolving middleware.
-   * The callback will be invoked for each function inside the
-   * middleware chain. This is the best place to convert the
-   * function/object into something else at runtime.
+   * Concat new middleware items to the existing
+   * list
    *
-   * @param {Function} fn
+   * @method concat
    *
-   * @return {Object} this for chaining
+   * @param  {Array} list
+   *
+   * @chainable
+   */
+  concat (list) {
+    if (!Array.isArray(list)) {
+      throw new Error('runnable.concat expects an array of middleware')
+    }
+    this._list = this._list.concat(list)
+    return this
+  }
+
+  /**
+   * A custom function to resolve each item in the list.
+   * Think of it as a function to resolve functions/values
+   * registered inside middleware.
+   *
+   * @method resolve
+   *
+   * @param  {Function} fn
+   *
+   * @chainable
    */
   resolve (fn) {
+    if (typeof (fn) !== 'function') {
+      throw new Error('runnable.resolve accepts a function as the first argument')
+    }
     this._resolveFn = fn
     return this
   }
 
   /**
-   * Returns a promise to be executed to run the middleware
-   * chain.
+   * Executes the middleware chain
    *
-   * @method compose
+   * @method run
    *
-   * @return {Promise}
+   * @return {Promsie}
    */
-  compose () {
-    const list = this._list
-    const params = this._params
-    const resolveFn = this._resolveFn
-    const resolveListItem = this._resolveListItem
-
-    return function () {
-      return dispatch(0)
-      function dispatch (index) {
-        const item = list[index]
-
-        /**
-         * end the chain when nothing is left
-         */
-        if (!item) {
-          return Promise.resolve()
-        }
-
-        /**
-         * Make sure multiple calls to next inside
-         * a same middleware are ignored.
-         */
-        const next = _.once(() => dispatch(index + 1))
-        return resolveListItem(item, params, resolveFn, next)
-      }
-    }
+  run () {
+    return this._invoke(0)
   }
 }
 
