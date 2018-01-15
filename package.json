@@ -1,6 +1,6 @@
 {
   "name": "co-compose",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "description": "Adonis and koa style middleware layer with ability to run parallel middleware",
   "main": "index.js",
   "directories": {

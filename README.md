@@ -11,7 +11,7 @@ Co compose composes an array of middleware to be executed in sequence. The libra
 
 ## Pattern
 
-It follows the middleware pattern with following trait. 
+It follows the middleware pattern with following traits.
 
 1. Each method is called in sequence after `next` is called.
 2. If `next` is not called, the middleware chain will short-circuit and resolves right away.
