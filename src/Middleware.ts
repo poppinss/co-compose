@@ -9,41 +9,28 @@
  * file that was distributed with this source code.
 */
 
-const Runnable = require('./Runnable')
+import { Runnable } from './Runnable'
 
-class Middleware {
-  constructor () {
-    this.list = []
-  }
+export class Middleware {
+  private _list: any[] = []
 
   /**
-   * Register an array of middleware
-   *
-   * @method register
-   *
-   * @param  {Array} list
-   *
-   * @chainable
+   * Register an array of middleware to executed
+   * later.
    */
-  register (list) {
+  public register (list: any[]): this {
     if (!Array.isArray(list)) {
       throw new Error('middleware.register expects an array of middleware')
     }
-    this.list = this.list.concat(list)
+    this._list = this._list.concat(list)
     return this
   }
 
   /**
    * Returns an instance of runner to execute
    * the middleware
-   *
-   * @method runner
-   *
-   * @return {Runner}
    */
-  runner () {
-    return new Runnable(this.list)
+  public runner () {
+    return new Runnable(this._list)
   }
 }
-
-module.exports = Middleware
