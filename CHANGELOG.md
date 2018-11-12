@@ -1,3 +1,16 @@
+<a name="5.0.0"></a>
+# [5.0.0](https://github.com/poppinss/co-compose/compare/v4.0.0...v5.0.0) (2018-11-12)
+
+
+### Features
+
+* rewrite in typescript ([f9d9153](https://github.com/poppinss/co-compose/commit/f9d9153))
+
+## Breaking changes
+
+* Remove `runner.params` in favour of passing `params` directly to the `run` function.
+* Remove `runner.concat`. The list passed to the `runner` must be final array of middleware to be executed.
+
 <a name="4.0.0"></a>
 # [4.0.0](https://github.com/poppinss/co-compose/compare/v3.0.1...v4.0.0) (2018-01-15)
 

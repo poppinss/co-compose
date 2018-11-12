@@ -1,20 +1,25 @@
 {
   "name": "co-compose",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Adonis and koa style middleware layer with ability to run parallel middleware",
-  "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
-  "files": ["src"],
+  "main": "build/src/Middleware.js",
+  "files": [
+    "build/src",
+    "LICENSE.md"
+  ],
   "scripts": {
-    "lint": "standard",
+    "mrm": "mrm --preset=@adonisjs/mrm-preset",
     "pretest": "npm run lint",
-    "posttest": "npm run coverage",
     "test:local": "FORCE_COLOR=true node bin/index.js --local",
-    "test": "./node_modules/.bin/nyc npm run test:local",
+    "test": "nyc node japaFile.js",
     "test:win": "set FORCE_COLOR=true && node bin/index.js --win",
-    "coverage": "nyc report --reporter=text-lcov | coveralls"
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "prepublishOnly": "npm run build",
+    "lint": "tslint --project tsconfig.json",
+    "clean": "del build",
+    "compile": "npm run lint && npm run clean && tsc",
+    "build": "npm run compile",
+    "commit": "git-cz"
   },
   "keywords": [
     "adonisjs",
@@ -26,25 +31,44 @@
   "author": "amanvirk,adonisjs",
   "license": "MIT",
   "devDependencies": {
-    "coveralls": "^3.0.0",
+    "@adonisjs/mrm-preset": "^1.0.14",
+    "@types/node": "^10.12.5",
+    "commitizen": "^3.0.4",
+    "coveralls": "^3.0.2",
     "cz-conventional-changelog": "^2.1.0",
+    "del-cli": "^1.1.0",
     "istanbul": "^1.1.0-alpha.1",
-    "japa": "^1.0.6",
+    "japa": "^2.0.6",
     "japa-cli": "^1.0.1",
-    "nyc": "^11.4.1",
-    "standard": "^10.0.3"
+    "mrm": "^1.2.1",
+    "nyc": "^13.1.0",
+    "pkg-ok": "^2.3.1",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "tslint-eslint-rules": "^5.4.0",
+    "typescript": "^3.1.6",
+    "yorkie": "^2.0.0"
   },
   "dependencies": {
     "once": "^1.4.0"
   },
   "config": {
     "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
+      "path": "cz-conventional-changelog"
     }
   },
   "nyc": {
     "include": [
       "src"
+    ],
+    "exclude": [
+      "test"
+    ],
+    "extension": [
+      ".ts"
     ]
+  },
+  "gitHooks": {
+    "commit-msg": "node ./node_modules/@adonisjs/mrm-preset/validateCommit/conventional/validate.js"
   }
 }

@@ -2,191 +2,131 @@
 
 > Compose an array of functions to be executed one after the other. Similar to Koa and AdonisJs.
 
-[![NPM Version][npm-image]][npm-url]
-[![Build Status][travis-image]][travis-url]
-[![Downloads Stats][npm-downloads]][npm-url]
-[![Appveyor][appveyor-image]][appveyor-url]
+[![travis-image]][travis-url]
+[![appveyor-image]][appveyor-url]
+[![coveralls-image]][coveralls-url]
+[![npm-image]][npm-url]
+![](https://img.shields.io/badge/Uses-Typescript-294E80.svg?style=flat-square&colorA=ddd)
 
 Co compose composes an array of middleware to be executed in sequence. The library is framework independent and can be used in any Javascript project.
 
-## Pattern
+## Installation
 
-It follows the middleware pattern with following traits.
+```sh
+npm i co-compose
 
-1. Each method is called in sequence after `next` is called.
-2. If `next` is not called, the middleware chain will short-circuit and resolves right away.
-3. Any middleware function can break the chain by throwing an exception.
-4. All middleware functions after `next` call are executed in reverse order.
+# yarn
+yarn add co-compose
+```
 
-```js
+## Setup
+Checkout the following example to run an array of middleware functions.
+
+```ts
+import { Middleware } from 'co-compose'
+const stack = []
+
+async function fn1 (next) {
+  stack.push('fn1')
+  await next()
+}
+
+async function fn2 (next) {
+  stack.push('fn2')
+  await next()
+}
+
 const middleware = new Middleware()
-
-const logs = []
-
-async function first (next) {
-  logs.push('first')
-  await next()
-  logs.push('first: in reverse')
-}
-
-async function second (next) {
-  logs.push('second')
-  await next()
-  logs.push('second: in reverse')
-}
-
-async function third (next) {
-  logs.push('third')
-  await next()
-  logs.push('third: in reverse')
-}
-
-middleware.register([first, second, third])
-
-await middleware.runner().run()
-assert.deepEqual(logs, [
-  'first',
-  'second',
-  'third',
-  'third: in reverse',
-  'second: in reverse',
-  'first: in reverse'
-])
-```
-
-
-## Usage
-
-Start by importing the library and instantiating a new instance of it.
-
-```js
-const Middleware = require('co-compose')
-const middleware = new Middleware()
-```
-
-Next, register the middleware functions.
-
-```js
-middleware.register([
-  async function (next) {
-    await next()
-  },
-  async function (next) {
-    await next()
-  }
-])
-```
-
-Pull an instance of middleware runner to executed the **registered middleware**.
-
-```js
-const runner = middleware.runner()
-
-runner
-  .run()
-  .then(() => {
-    console.log('middleware executed')
-  })
-  .catch((error) => {
-    console.log(error)
-  })
-```
-
-### Passing data along
-A common use case of middleware is the HTTP request lifecycle. Let's see how we to pass the `req` and `res` objects to the middleware functions.
-
-```js
-const http = require('http')
-const middleware = new (require('co-compose'))()
-
-middleware.register([
-  async function (req, res, next) {
-    req.greeting = 'Hello world'
-    await next()
-  },
-
-  async function (req, res, next) {
-    res.write(req.greeting)
-    await next()
-  }
-])
-
-http.createServer(async function (req, res) {
-  const runner = middleware.runner()
-
-  // passing data
-  runner.params([req, res])
-
-  runner
-    .run()
-    .then(() => {
-      res.end()
-    })
-    .catch((error) => {
-      res.end(error.message)
-    })
-}).listen(3000)
-```
-
-The `params` method accepts an array of values as pass them as arguments to the middleware.
-
-## Middleware API
-
-#### register([fns])
-An array of functions to be executed as middleware. Calling this method for multiple times, will concat to the existing list.
-
-```js
 middleware.register([fn1, fn2])
+
+await middleware.runner().run([])
+assert.deepEqual(stack, ['fn1', 'fn2'])
 ```
 
-#### runner()
-Returns an instance of runner with the registered middleware.
+### Passing values
+You can also pass values to all middleware functions. An `array` of values passed to `runner.run()` will be passed to middleware functions as multiple arguments.
 
 ```js
-middleware
+async function fn1 (ctx, next) {
+  ctx.stack.push('fn1')
+  await next()
+}
+
+async function fn2 (ctx, next) {
+  ctx.stack.push('fn2')
+  await next()
+}
+
+const ctx = {
+  stack: []
+}
+
+await middleware.runner().run([ctx])
+assert.deepEqual(ctx.stack, ['fn1', 'fn2'])
+```
+
+### Custom resolver
+The default behaviour is to define middleware as functions. However, you can define them in any shape and then use a custom resolver to execute them. 
+
+Check the following example where `ES6 classes` are used.
+
+```js
+class Middleware1 {
+  async handle (ctx, next) {
+    ctx.stack.push('fn1')
+    await next()
+  }
+}
+
+class Middleware2 {
+  async handle (ctx, next) {
+    ctx.stack.push('fn2')
+    await next()
+  }
+}
+
+const middleware = new Middleware()
+const ctx = {
+  stack: []
+}
+
+middleware.register([Middleware1, Middleware2])
+
+await middleware
   .runner()
-  .run()
-  .then(console.log)
-  .catch(console.error)
+  .resolve(async function (MiddlewareClass, params) {
+    const instance = new MiddlewareClass()
+    await instance.handle(...params)
+  })
+  .run([ctx])
 ```
 
-## Runner API
 
-#### params([values])
-An array of values to be passed to the middleware functions as arguments. Each value inside array is passed as a seperate argument.
+## Change log
 
-```js
-const runner = middleware.runner()
-runner.params([req, res])
-```
+The change log can be found in the [CHANGELOG.md](CHANGELOG.md) file.
 
-#### run() -> Promise
-Execute the middleware chain
+## Contributing
 
-```js
-const runner = middleware.runner()
+Everyone is welcome to contribute. Please go through the following guides, before getting started.
 
-runner
-  .run()
-  .then(console.log)
-  .catch(console.error)
-```
+1. [Contributing](https://adonisjs.com/contributing)
+2. [Code of conduct](https://adonisjs.com/code-of-conduct)
 
-#### concat([fns])
-Concat middleware functions just before executing them. This method is useful when middleware list is known at runtime.
 
-```js
-const runner = middleware.runner()
-runner.concat([fn3, fn4])
-```
+## Authors & License
+[Harminder Virk](https://github.com/Harminder Virk) and [contributors](https://github.com/poppinss/co-compose/graphs/contributors).
 
-[appveyor-image]: https://img.shields.io/appveyor/ci/thetutlage/co-compose/develop.svg?style=flat-square
-[appveyor-url]: https://ci.appveyor.com/project/thetutlage/co-compose
+MIT License, see the included [MIT](LICENSE.md) file.
 
-[npm-image]: https://img.shields.io/npm/v/co-compose.svg?style=flat-square
-[npm-url]: https://npmjs.org/package/co-compose
-[npm-downloads]: https://img.shields.io/npm/dm/co-compose.svg?style=flat-square
+[travis-image]: https://img.shields.io/travis/poppinss/co-compose/master.svg?style=flat-square&logo=travis
+[travis-url]: https://travis-ci.org/poppinss/co-compose "travis"
 
-[travis-image]: https://img.shields.io/travis/poppinss/co-compose/master.svg?style=flat-square
-[travis-url]: https://travis-ci.org/poppinss/co-compose
+[appveyor-image]: https://img.shields.io/appveyor/ci/thetutlage/co-compose/master.svg?style=flat-square&logo=appveyor
+[appveyor-url]: https://ci.appveyor.com/project/thetutlage/co-compose "appveyor"
 
+[coveralls-image]: https://img.shields.io/coveralls/poppinss/co-compose/master.svg?style=flat-square
+[coveralls-url]: https://coveralls.io/github/poppinss/co-compose "coveralls"
+
+[npm-image]: https://img.shields.io/npm/v/co-compose.svg?style=flat-square&logo=npm
+[npm-url]: https://npmjs.org/package/co-compose "npm"
