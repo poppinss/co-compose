@@ -36,10 +36,10 @@ async function fn2 (next) {
   await next()
 }
 
-const middleware = Middleware()
+const middleware = new Middleware()
 middleware.register([fn1, fn2])
 
-await middleware.runner.run([])
+await middleware.runner().run([])
 assert.deepEqual(stack, ['fn1', 'fn2'])
 ```
 
@@ -61,7 +61,7 @@ const ctx = {
   stack: []
 }
 
-await middleware.runner.run([ctx])
+await middleware.runner().run([ctx])
 assert.deepEqual(ctx.stack, ['fn1', 'fn2'])
 ```
 

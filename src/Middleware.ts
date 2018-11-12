@@ -22,6 +22,7 @@ export class Middleware {
     if (!Array.isArray(list)) {
       throw new Error('middleware.register expects an array of middleware')
     }
+
     this._list = this._list.concat(list)
     return this
   }

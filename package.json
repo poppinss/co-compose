@@ -2,12 +2,10 @@
   "name": "co-compose",
   "version": "4.0.0",
   "description": "Adonis and koa style middleware layer with ability to run parallel middleware",
-  "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
+  "main": "build/src/Middleware.js",
   "files": [
-    "src"
+    "build/src",
+    "LICENSE.md"
   ],
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
