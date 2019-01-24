@@ -8,7 +8,7 @@
  */
 
 import * as once from 'once'
-import { MiddlewareFn, MiddlewareResolve } from './Contracts'
+import { MiddlewareFn, MiddlewareResolver } from './Contracts'
 
 /**
  * Runnable to execute an array of functions in sequence. The queue is
@@ -21,7 +21,7 @@ import { MiddlewareFn, MiddlewareResolve } from './Contracts'
  * ```
  */
 export class Runnable <T extends any[]> {
-  private _resolveFn: MiddlewareResolve<T> | null
+  private _resolveFn: MiddlewareResolver<T> | null
 
   constructor (private _list: any[]) {
   }
@@ -76,7 +76,7 @@ export class Runnable <T extends any[]> {
    * and it's the responsibility of this method to call the
    * middleware and pass params to it
    */
-  public resolve (fn: MiddlewareResolve<T>): this {
+  public resolve (fn: MiddlewareResolver<T>): this {
     this._resolveFn = fn
     return this
   }
