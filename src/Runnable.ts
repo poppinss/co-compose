@@ -8,7 +8,7 @@
  */
 
 import * as once from 'once'
-import { IMiddlewareFn, IMiddlewareResolve } from './Contracts'
+import { MiddlewareFn, MiddlewareResolve } from './Contracts'
 
 /**
  * Runnable to execute an array of functions in sequence. The queue is
@@ -21,7 +21,7 @@ import { IMiddlewareFn, IMiddlewareResolve } from './Contracts'
  * ```
  */
 export class Runnable <T extends any[]> {
-  private _resolveFn: IMiddlewareResolve<T> | null
+  private _resolveFn: MiddlewareResolve<T> | null
 
   constructor (private _list: any[]) {
   }
@@ -29,7 +29,7 @@ export class Runnable <T extends any[]> {
   /**
    * Execute the middleware fn by passing params to it
    */
-  private async _executor (fn: IMiddlewareFn<T>, params: T) {
+  private async _executor (fn: MiddlewareFn<T>, params: T) {
     await fn(...params)
   }
 
@@ -37,7 +37,7 @@ export class Runnable <T extends any[]> {
    * Invoke one middleware at a time. Middleware fns will be executed
    * recursively until `next` is invoked.
    *
-   * If one method doesn't call next, then the chain will be finished
+   * If one method doesn't call `next`, then the chain will be finished
    * automatically.
    */
   private async _invoke (index: number, params: any) {
@@ -64,7 +64,7 @@ export class Runnable <T extends any[]> {
      * Call custom resolve fn (if exists)
      */
     if (this._resolveFn) {
-      return await this._resolveFn(fn, resolvedParams)
+      return this._resolveFn(fn, resolvedParams)
     }
 
     await this._executor(fn, resolvedParams)
@@ -76,7 +76,7 @@ export class Runnable <T extends any[]> {
    * and it's the responsibility of this method to call the
    * middleware and pass params to it
    */
-  public resolve (fn: IMiddlewareResolve<T>): this {
+  public resolve (fn: MiddlewareResolve<T>): this {
     this._resolveFn = fn
     return this
   }
