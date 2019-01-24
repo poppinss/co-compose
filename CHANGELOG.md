@@ -1,3 +1,13 @@
+<a name="5.0.2"></a>
+## [5.0.2](https://github.com/poppinss/co-compose/compare/5.0.1...5.0.2) (2019-01-24)
+
+
+### Bug Fixes
+
+* **middleware:** fix contract typo ([239774c](https://github.com/poppinss/co-compose/commit/239774c))
+
+
+
 <a name="5.0.0"></a>
 # [5.0.0](https://github.com/poppinss/co-compose/compare/v4.0.0...v5.0.0) (2018-11-12)
 
