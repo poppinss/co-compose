@@ -101,6 +101,32 @@ await middleware
   .run([ctx])
 ```
 
+### Final Handler
+The final handler is a executed when the entire middleware chain ends by calling `next`. This makes it easier to execute custom functions, which are not part of the chain, however must be executed when chain ends.
+
+> The arguments are customizable for the final handler
+
+```js
+async function fn1 (ctx, next) {
+  ctx.stack.push('fn1')
+  await next()
+}
+
+async function finalHandler () {
+  ctx.stack.push('final handler')
+}
+
+const ctx = {
+  stack: []
+}
+
+await middleware
+  .runner()
+  .finalHandler(finalHandler, [ctx])
+  .run([ctx])
+
+assert.deepEqual(ctx.stack, ['fn1', 'final handler'])
+```
 
 ## Change log
 

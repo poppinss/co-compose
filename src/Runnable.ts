@@ -8,7 +8,33 @@
  */
 
 import * as once from 'once'
-import { MiddlewareFn, MiddlewareResolver } from './Contracts'
+
+/**
+ * An array of arguments + the next function
+ */
+type MiddlewareArgs = any[]
+
+/**
+ * The middleware actual function
+ */
+type MiddlewareFn = (...params: MiddlewareArgs) => Promise<void>
+
+/**
+ * Executor job is to execute one middleware function at a
+ * time and pass arguments to it
+ */
+type Executor = (fn: any, params: MiddlewareArgs) => Promise<void>
+
+/**
+ * Args received by the final handler
+ */
+type FinalHandlerArgs = any[]
+
+/**
+ * Final handler is called when the entire chain executes
+ * completely
+ */
+type FinalHandler = (...params: FinalHandlerArgs) => Promise<void>
 
 /**
  * Runnable to execute an array of functions in sequence. The queue is
@@ -20,8 +46,9 @@ import { MiddlewareFn, MiddlewareResolver } from './Contracts'
  * }])
  * ```
  */
-export class Runnable <T extends any[]> {
-  private _resolveFn: MiddlewareResolver<T> | null
+export class Runnable {
+  private _resolveFn: Executor | null
+  private _finalHandler: { fn: FinalHandler, args: FinalHandlerArgs } | null = null
 
   constructor (private _list: any[]) {
   }
@@ -29,7 +56,7 @@ export class Runnable <T extends any[]> {
   /**
    * Execute the middleware fn by passing params to it
    */
-  private async _executor (fn: MiddlewareFn<T>, params: T) {
+  private async _executor (fn: MiddlewareFn, params: MiddlewareArgs): Promise<void> {
     await fn(...params)
   }
 
@@ -47,7 +74,7 @@ export class Runnable <T extends any[]> {
      * Empty stack
      */
     if (!fn) {
-      return Promise.resolve()
+      return this._finalHandler ? this._finalHandler.fn(...this._finalHandler.args) : Promise.resolve()
     }
 
     /**
@@ -58,7 +85,7 @@ export class Runnable <T extends any[]> {
     /**
      * Params to pass to next middleware fn
      */
-    const resolvedParams = params.concat(next)
+    const resolvedParams: MiddlewareArgs = params.concat(next)
 
     /**
      * Call custom resolve fn (if exists)
@@ -71,12 +98,20 @@ export class Runnable <T extends any[]> {
   }
 
   /**
+   * Final handler to be executed, when chain ends successfully
+   */
+  public finalHandler (fn: FinalHandler, args: FinalHandlerArgs): this {
+    this._finalHandler = { fn, args }
+    return this
+  }
+
+  /**
    * Define custom resolver, which is invoked for all the middleware.
    * If this method is defined, then default executor is not called
    * and it's the responsibility of this method to call the
    * middleware and pass params to it
    */
-  public resolve (fn: MiddlewareResolver<T>): this {
+  public resolve (fn: Executor): this {
     this._resolveFn = fn
     return this
   }
