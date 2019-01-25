@@ -330,4 +330,39 @@ test.group('Runnable', () => {
       assert.equal(message, 'bad')
     }
   })
+
+  test('define final handler to be executed after chain', async (assert) => {
+    const stack: any[] = []
+
+    const runner = new Runnable([function fn (ctx, next) {
+      stack.push(ctx)
+      return next()
+    }])
+
+    async function finalHandler (ctx) {
+      stack.push(ctx)
+    }
+
+    runner.finalHandler(finalHandler, ['foo'])
+    await runner.run(['bar'])
+
+    assert.deepEqual(stack, ['bar', 'foo'])
+  })
+
+  test('do not call final handler when next is not called', async (assert) => {
+    const stack: any[] = []
+
+    const runner = new Runnable([function fn (ctx) {
+      stack.push(ctx)
+    }])
+
+    async function finalHandler (ctx) {
+      stack.push(ctx)
+    }
+
+    runner.finalHandler(finalHandler, ['foo'])
+    await runner.run(['bar'])
+
+    assert.deepEqual(stack, ['bar'])
+  })
 })
