@@ -1,3 +1,13 @@
+<a name="5.1.0"></a>
+# [5.1.0](https://github.com/poppinss/co-compose/compare/5.0.2...5.1.0) (2019-01-25)
+
+
+### Features
+
+* **runnable:** add support for final handler ([02e0fbd](https://github.com/poppinss/co-compose/commit/02e0fbd))
+
+
+
 <a name="5.0.2"></a>
 ## [5.0.2](https://github.com/poppinss/co-compose/compare/5.0.1...5.0.2) (2019-01-24)
 
