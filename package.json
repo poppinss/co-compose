@@ -49,9 +49,7 @@
     "typescript": "^3.2.4",
     "yorkie": "^2.0.0"
   },
-  "dependencies": {
-    "once": "^1.4.0"
-  },
+  "dependencies": {},
   "config": {
     "commitizen": {
       "path": "cz-conventional-changelog"

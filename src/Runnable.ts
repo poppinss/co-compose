@@ -7,8 +7,6 @@
  * file that was distributed with this source code.
  */
 
-import * as once from 'once'
-
 /**
  * An array of arguments + the next function
  */
@@ -49,6 +47,8 @@ type FinalHandler = (...params: FinalHandlerArgs) => Promise<void>
 export class Runnable {
   private _resolveFn: Executor | null
   private _finalHandler: { fn: FinalHandler, args: FinalHandlerArgs } | null = null
+  private _index = 0
+  private _params: any[] = []
 
   constructor (private _list: any[]) {
   }
@@ -67,8 +67,8 @@ export class Runnable {
    * If one method doesn't call `next`, then the chain will be finished
    * automatically.
    */
-  private async _invoke (index: number, params: any) {
-    const fn = this._list[index]
+  private async _invoke () {
+    const fn = this._list[this._index++]
 
     /**
      * Empty stack
@@ -78,14 +78,9 @@ export class Runnable {
     }
 
     /**
-     * Next fn to call the next middleware fn
-     */
-    const next = once(() => this._invoke(index + 1, params))
-
-    /**
      * Params to pass to next middleware fn
      */
-    const resolvedParams: MiddlewareArgs = params.concat(next)
+    const resolvedParams: MiddlewareArgs = this._params.concat(this._invoke.bind(this))
 
     /**
      * Call custom resolve fn (if exists)
@@ -121,6 +116,7 @@ export class Runnable {
    * array will be passed as spread arguments.
    */
   public async run (params: any[]): Promise<void> {
-    await this._invoke(0, params)
+    this._params = params
+    await this._invoke()
   }
 }
