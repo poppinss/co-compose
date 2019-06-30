@@ -31,7 +31,7 @@
   "author": "amanvirk,adonisjs",
   "license": "MIT",
   "devDependencies": {
-    "@adonisjs/mrm-preset": "^1.0.16",
+    "@adonisjs/mrm-preset": "^2.0.3",
     "@types/node": "^10.12.18",
     "commitizen": "^3.0.5",
     "coveralls": "^3.0.2",
