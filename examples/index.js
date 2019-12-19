@@ -17,7 +17,7 @@
 
   const middleware = new Middleware()
   const ctx = {
-    stack: []
+    stack: [],
   }
 
   middleware.register([Middleware1, Middleware2])

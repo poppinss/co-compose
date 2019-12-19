@@ -7,32 +7,7 @@
 * file that was distributed with this source code.
 */
 
-/**
- * An array of arguments + the next function
- */
-type MiddlewareArgs = any[]
-
-/**
- * The middleware actual function
- */
-type MiddlewareFn = (...params: MiddlewareArgs) => Promise<void>
-
-/**
- * Executor job is to execute one middleware function at a
- * time and pass arguments to it
- */
-type Executor = (fn: any, params: MiddlewareArgs) => Promise<void>
-
-/**
- * Args received by the final handler
- */
-type FinalHandlerArgs = any[]
-
-/**
- * Final handler is called when the entire chain executes
- * completely
- */
-type FinalHandler = (...params: FinalHandlerArgs) => Promise<void>
+import { Executor, FinalHandler, FinalHandlerArgs, MiddlewareArgs, MiddlewareFn } from './Contracts'
 
 /**
  * Runnable to execute an array of functions in sequence. The queue is

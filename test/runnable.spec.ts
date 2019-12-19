@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
 */
 
-import * as test from 'japa'
+import test from 'japa'
 import { Runnable } from '../src/Runnable'
 
-function sleep (timeout) {
+function sleep (timeout: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, timeout)
   })
