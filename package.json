@@ -70,5 +70,17 @@
     "hooks": {
       "commit-msg": "node ./node_modules/@adonisjs/mrm-preset/validateCommit/conventional/validate.js"
     }
-  }
+  },
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/poppinss/co-compose.git"
+  },
+  "bugs": {
+    "url": "https://github.com/poppinss/co-compose/issues"
+  },
+  "homepage": "https://github.com/poppinss/co-compose#readme"
 }
