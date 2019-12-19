@@ -1,18 +1,20 @@
-'use strict'
-
 /*
- * co-compose
- *
- * (c) Harminder Virk <virk@adonisjs.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+* co-componse
+*
+* (c) Harminder Virk <virk@adonisjs.com>
+*
+* For the full copyright and license information, please view the LICENSE
+* file that was distributed with this source code.
 */
 
 import { Runnable } from './Runnable'
 
+/**
+ * Exposes the API to register middleware and later execute
+ * them using the runner.
+ */
 export class Middleware {
-  private _list: any[] = []
+  private list: any[] = []
 
   /**
    * Register an array of middleware to executed
@@ -23,7 +25,7 @@ export class Middleware {
       throw new Error('middleware.register expects an array of middleware')
     }
 
-    this._list = this._list.concat(list)
+    this.list = this.list.concat(list)
     return this
   }
 
@@ -32,6 +34,6 @@ export class Middleware {
    * the middleware
    */
   public runner () {
-    return new Runnable(this._list)
+    return new Runnable(this.list)
   }
 }

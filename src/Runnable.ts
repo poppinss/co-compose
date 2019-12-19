@@ -1,11 +1,11 @@
-/**
- * co-compose
- *
- * (c) Harminder Virk <virk@adonisjs.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
+/*
+* co-compose
+*
+* (c) Harminder Virk <virk@adonisjs.com>
+*
+* For the full copyright and license information, please view the LICENSE
+* file that was distributed with this source code.
+*/
 
 /**
  * An array of arguments + the next function
@@ -45,18 +45,18 @@ type FinalHandler = (...params: FinalHandlerArgs) => Promise<void>
  * ```
  */
 export class Runnable {
-  private _resolveFn: Executor | null
-  private _finalHandler: { fn: FinalHandler, args: FinalHandlerArgs } | null = null
-  private _index = 0
-  private _params: any[] = []
+  private resolveFn: Executor | null
+  private registeredFinalHandler: { fn: FinalHandler, args: FinalHandlerArgs } | null = null
+  private index = 0
+  private params: any[] = []
 
-  constructor (private _list: any[]) {
+  constructor (private list: any[]) {
   }
 
   /**
    * Execute the middleware fn by passing params to it
    */
-  private async _executor (fn: MiddlewareFn, params: MiddlewareArgs): Promise<void> {
+  private async executor (fn: MiddlewareFn, params: MiddlewareArgs): Promise<void> {
     await fn(...params)
   }
 
@@ -67,36 +67,38 @@ export class Runnable {
    * If one method doesn't call `next`, then the chain will be finished
    * automatically.
    */
-  private async _invoke () {
-    const fn = this._list[this._index++]
+  private async invoke () {
+    const fn = this.list[this.index++]
 
     /**
      * Empty stack
      */
     if (!fn) {
-      return this._finalHandler ? this._finalHandler.fn(...this._finalHandler.args) : Promise.resolve()
+      return this.registeredFinalHandler
+        ? this.registeredFinalHandler.fn(...this.registeredFinalHandler.args)
+        : Promise.resolve()
     }
 
     /**
      * Params to pass to next middleware fn
      */
-    const resolvedParams: MiddlewareArgs = this._params.concat(this._invoke.bind(this))
+    const resolvedParams: MiddlewareArgs = this.params.concat(this.invoke.bind(this))
 
     /**
      * Call custom resolve fn (if exists)
      */
-    if (this._resolveFn) {
-      return this._resolveFn(fn, resolvedParams)
+    if (this.resolveFn) {
+      return this.resolveFn(fn, resolvedParams)
     }
 
-    await this._executor(fn, resolvedParams)
+    await this.executor(fn, resolvedParams)
   }
 
   /**
    * Final handler to be executed, when chain ends successfully
    */
   public finalHandler (fn: FinalHandler, args: FinalHandlerArgs): this {
-    this._finalHandler = { fn, args }
+    this.registeredFinalHandler = { fn, args }
     return this
   }
 
@@ -107,7 +109,7 @@ export class Runnable {
    * middleware and pass params to it
    */
   public resolve (fn: Executor): this {
-    this._resolveFn = fn
+    this.resolveFn = fn
     return this
   }
 
@@ -116,7 +118,7 @@ export class Runnable {
    * array will be passed as spread arguments.
    */
   public async run (params: any[]): Promise<void> {
-    this._params = params
-    await this._invoke()
+    this.params = params
+    await this.invoke()
   }
 }
