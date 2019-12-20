@@ -1,17 +1,11 @@
 # Co Compose
+> Compose an array of functions to be executed one after the other. Similar to Koa and AdonisJS middlewares.
 
-> Compose an array of functions to be executed one after the other. Similar to Koa and AdonisJs.
-
-[![travis-image]][travis-url]
-[![appveyor-image]][appveyor-url]
-[![coveralls-image]][coveralls-url]
-[![npm-image]][npm-url]
-![](https://img.shields.io/badge/Uses-Typescript-294E80.svg?style=flat-square&colorA=ddd)
+[![circleci-image]][circleci-url] [![typescript-image]][typescript-url] [![npm-image]][npm-url] [![license-image]][license-url]
 
 Co compose composes an array of middleware to be executed in sequence. The library is framework independent and can be used in any Javascript project.
 
 ## Installation
-
 ```sh
 npm i co-compose
 
@@ -19,20 +13,18 @@ npm i co-compose
 yarn add co-compose
 ```
 
-## Setup
+## Usage
 Checkout the following example to run an array of middleware functions.
 
 ```ts
 import { Middleware } from 'co-compose'
-const stack = []
-
 async function fn1 (next) {
-  stack.push('fn1')
+  console.log('executing fn1')
   await next()
 }
 
 async function fn2 (next) {
-  stack.push('fn2')
+  console.log('executing fn2')
   await next()
 }
 
@@ -40,7 +32,6 @@ const middleware = new Middleware()
 middleware.register([fn1, fn2])
 
 await middleware.runner().run([])
-assert.deepEqual(stack, ['fn1', 'fn2'])
 ```
 
 ### Passing values
@@ -128,31 +119,14 @@ await middleware
 assert.deepEqual(ctx.stack, ['fn1', 'final handler'])
 ```
 
-## Change log
+[circleci-image]: https://img.shields.io/circleci/project/github/poppinss/co-compose/master.svg?style=for-the-badge&logo=circleci
+[circleci-url]: https://circleci.com/gh/poppinss/co-compose "circleci"
 
-The change log can be found in the [CHANGELOG.md](CHANGELOG.md) file.
+[typescript-image]: https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript
+[typescript-url]:  "typescript"
 
-## Contributing
-
-Everyone is welcome to contribute. Please go through the following guides, before getting started.
-
-1. [Contributing](https://adonisjs.com/contributing)
-2. [Code of conduct](https://adonisjs.com/code-of-conduct)
-
-
-## Authors & License
-[Harminder Virk](https://github.com/Harminder Virk) and [contributors](https://github.com/poppinss/co-compose/graphs/contributors).
-
-MIT License, see the included [MIT](LICENSE.md) file.
-
-[travis-image]: https://img.shields.io/travis/poppinss/co-compose/master.svg?style=flat-square&logo=travis
-[travis-url]: https://travis-ci.org/poppinss/co-compose "travis"
-
-[appveyor-image]: https://img.shields.io/appveyor/ci/thetutlage/co-compose/master.svg?style=flat-square&logo=appveyor
-[appveyor-url]: https://ci.appveyor.com/project/thetutlage/co-compose "appveyor"
-
-[coveralls-image]: https://img.shields.io/coveralls/poppinss/co-compose/master.svg?style=flat-square
-[coveralls-url]: https://coveralls.io/github/poppinss/co-compose "coveralls"
-
-[npm-image]: https://img.shields.io/npm/v/co-compose.svg?style=flat-square&logo=npm
+[npm-image]: https://img.shields.io/npm/v/co-compose.svg?style=for-the-badge&logo=npm
 [npm-url]: https://npmjs.org/package/co-compose "npm"
+
+[license-image]: https://img.shields.io/npm/l/co-compose?color=blueviolet&style=for-the-badge
+[license-url]: LICENSE.md "license"
