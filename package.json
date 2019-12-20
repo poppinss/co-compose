@@ -2,24 +2,24 @@
   "name": "co-compose",
   "version": "5.1.1",
   "description": "Adonis and koa style middleware layer with ability to run parallel middleware",
-  "main": "build/src/Middleware.js",
+  "main": "build/index.js",
   "files": [
     "build/src",
-    "LICENSE.md"
+    "build/index.d.ts",
+    "build/index.js"
   ],
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
     "pretest": "npm run lint",
     "test:local": "FORCE_COLOR=true node bin/index.js --local",
-    "test": "nyc node japaFile.js",
+    "test": "node japaFile.js",
     "test:win": "set FORCE_COLOR=true && node bin/index.js --win",
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "prepublishOnly": "npm run build",
-    "lint": "eslint . --ext=.ts",
     "clean": "del build",
     "compile": "npm run lint && npm run clean && tsc",
     "build": "npm run compile",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "lint": "eslint . --ext=.ts"
   },
   "keywords": [
     "adonisjs",
@@ -34,7 +34,6 @@
     "@adonisjs/mrm-preset": "^2.2.3",
     "@types/node": "^12.12.21",
     "commitizen": "^4.0.3",
-    "coveralls": "^3.0.9",
     "cz-conventional-changelog": "^3.0.2",
     "del-cli": "^3.0.0",
     "eslint": "^6.7.2",
@@ -44,7 +43,6 @@
     "japa": "^3.0.1",
     "japa-cli": "^1.0.1",
     "mrm": "^2.0.2",
-    "nyc": "^14.1.1",
     "pkg-ok": "^2.3.1",
     "ts-node": "^8.5.4",
     "typescript": "^3.7.3"
