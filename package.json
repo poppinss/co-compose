@@ -19,7 +19,9 @@
     "compile": "npm run lint && npm run clean && tsc",
     "build": "npm run compile",
     "commit": "git-cz",
-    "lint": "eslint . --ext=.ts"
+    "lint": "eslint . --ext=.ts",
+    "release": "np",
+    "version": "npm run build"
   },
   "keywords": [
     "adonisjs",
@@ -43,6 +45,7 @@
     "japa": "^3.0.1",
     "japa-cli": "^1.0.1",
     "mrm": "^2.0.2",
+    "np": "^5.2.1",
     "pkg-ok": "^2.3.1",
     "ts-node": "^8.5.4",
     "typescript": "^3.7.3"
@@ -80,5 +83,9 @@
   "bugs": {
     "url": "https://github.com/poppinss/co-compose/issues"
   },
-  "homepage": "https://github.com/poppinss/co-compose#readme"
+  "homepage": "https://github.com/poppinss/co-compose#readme",
+  "np": {
+    "contents": ".",
+    "anyBranch": false
+  }
 }
