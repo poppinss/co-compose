@@ -1,92 +1,96 @@
 {
-  "name": "co-compose",
-  "version": "5.1.5",
-  "description": "AdonisJS and Koa style middleware layer with ability to run parallel middleware",
-  "main": "build/index.js",
-  "files": [
-    "build/src",
-    "build/index.d.ts",
-    "build/index.js"
-  ],
-  "scripts": {
-    "mrm": "mrm --preset=@adonisjs/mrm-preset",
-    "pretest": "npm run lint",
-    "test": "node japaFile.js",
-    "prepublishOnly": "npm run build",
-    "clean": "del build",
-    "compile": "npm run lint && npm run clean && tsc",
-    "build": "npm run compile",
-    "commit": "git-cz",
-    "release": "np",
-    "version": "npm run build",
-    "lint": "eslint . --ext=.ts",
-    "benchmark": "ts-node benchmarks/index.ts"
-  },
-  "keywords": [
-    "adonisjs",
-    "koa",
-    "middleware",
-    "co",
-    "co-middleware"
-  ],
-  "author": "virk,adonisjs",
-  "license": "MIT",
-  "devDependencies": {
-    "@adonisjs/mrm-preset": "^2.3.6",
-    "@types/node": "^14.0.14",
-    "benchmark": "^2.1.4",
-    "commitizen": "^4.1.2",
-    "cz-conventional-changelog": "^3.2.0",
-    "del-cli": "^3.0.1",
-    "doctoc": "^1.4.0",
-    "eslint": "^7.4.0",
-    "eslint-plugin-adonis": "^1.0.14",
-    "fastseries": "^2.0.0",
-    "husky": "^4.2.5",
-    "japa": "^3.1.1",
-    "middie": "^5.1.0",
-    "mrm": "^2.3.3",
-    "np": "^6.2.5",
-    "ts-node": "^8.10.2",
-    "typescript": "^3.9.6"
-  },
-  "dependencies": {},
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    }
-  },
-  "nyc": {
-    "include": [
-      "src"
-    ],
-    "exclude": [
-      "test"
-    ],
-    "extension": [
-      ".ts"
-    ]
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "node ./node_modules/@adonisjs/mrm-preset/validateCommit/conventional/validate.js",
-      "pre-commit": "doctoc README.md --title='## Table of contents' && git add README.md"
-    }
-  },
-  "directories": {
-    "example": "examples",
-    "test": "test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/poppinss/co-compose.git"
-  },
-  "bugs": {
-    "url": "https://github.com/poppinss/co-compose/issues"
-  },
-  "homepage": "https://github.com/poppinss/co-compose#readme",
-  "np": {
-    "contents": ".",
-    "anyBranch": false
-  }
+	"name": "co-compose",
+	"version": "5.1.5",
+	"description": "AdonisJS and Koa style middleware layer with ability to run parallel middleware",
+	"main": "build/index.js",
+	"files": [
+		"build/src",
+		"build/index.d.ts",
+		"build/index.js"
+	],
+	"scripts": {
+		"mrm": "mrm --preset=@adonisjs/mrm-preset",
+		"pretest": "npm run lint",
+		"test": "node japaFile.js",
+		"prepublishOnly": "npm run build",
+		"clean": "del build",
+		"compile": "npm run lint && npm run clean && tsc",
+		"build": "npm run compile",
+		"commit": "git-cz",
+		"release": "np",
+		"version": "npm run build",
+		"lint": "eslint . --ext=.ts",
+		"benchmark": "ts-node benchmarks/index.ts",
+		"format": "prettier --write ."
+	},
+	"keywords": [
+		"adonisjs",
+		"koa",
+		"middleware",
+		"co",
+		"co-middleware"
+	],
+	"author": "virk,adonisjs",
+	"license": "MIT",
+	"devDependencies": {
+		"@adonisjs/mrm-preset": "^2.3.6",
+		"@types/node": "^14.0.14",
+		"benchmark": "^2.1.4",
+		"commitizen": "^4.1.2",
+		"cz-conventional-changelog": "^3.2.0",
+		"del-cli": "^3.0.1",
+		"doctoc": "^1.4.0",
+		"eslint": "^7.4.0",
+		"eslint-config-prettier": "^6.11.0",
+		"eslint-plugin-adonis": "^1.0.14",
+		"eslint-plugin-prettier": "^3.1.4",
+		"fastseries": "^2.0.0",
+		"husky": "^4.2.5",
+		"japa": "^3.1.1",
+		"middie": "^5.1.0",
+		"mrm": "^2.3.3",
+		"np": "^6.2.5",
+		"prettier": "^2.0.5",
+		"ts-node": "^8.10.2",
+		"typescript": "^3.9.6"
+	},
+	"dependencies": {},
+	"config": {
+		"commitizen": {
+			"path": "cz-conventional-changelog"
+		}
+	},
+	"nyc": {
+		"include": [
+			"src"
+		],
+		"exclude": [
+			"test"
+		],
+		"extension": [
+			".ts"
+		]
+	},
+	"husky": {
+		"hooks": {
+			"commit-msg": "node ./node_modules/@adonisjs/mrm-preset/validateCommit/conventional/validate.js",
+			"pre-commit": "doctoc README.md --title='## Table of contents' && git add README.md"
+		}
+	},
+	"directories": {
+		"example": "examples",
+		"test": "test"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/poppinss/co-compose.git"
+	},
+	"bugs": {
+		"url": "https://github.com/poppinss/co-compose/issues"
+	},
+	"homepage": "https://github.com/poppinss/co-compose#readme",
+	"np": {
+		"contents": ".",
+		"anyBranch": false
+	}
 }
