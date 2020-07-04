@@ -21,9 +21,7 @@ const DEFAULT_FINAL_HANDLER = {
  * The default executor to execute middlewares. This method assumes middleware
  * as functions and calls them right away
  */
-const DEFAULT_EXECUTOR: Executor = async (fn: MiddlewareFn, params: MiddlewareArgs) => {
-	await fn(...params)
-}
+const DEFAULT_EXECUTOR: Executor = async (fn: MiddlewareFn, params: MiddlewareArgs) => fn(...params)
 
 /**
  * Runnable to execute an array of functions in sequence. The queue is
