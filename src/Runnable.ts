@@ -14,6 +14,10 @@ const DEFAULT_FINAL_HANDLER = {
 	args: [],
 }
 
+const DEFAULT_EXECUTOR = async (fn: MiddlewareFn, params: MiddlewareArgs) => {
+	await fn(...params)
+}
+
 /**
  * Runnable to execute an array of functions in sequence. The queue is
  * advanced only when the current function calls `next`.
@@ -27,17 +31,10 @@ const DEFAULT_FINAL_HANDLER = {
 export class Runnable {
 	private index = 0
 	private params: MiddlewareArgs = []
-	private resolveFn: Executor = this.executor.bind(this)
+	private executorFn: Executor = DEFAULT_EXECUTOR
 	private registeredFinalHandler: { fn: FinalHandler; args: FinalHandlerArgs } = DEFAULT_FINAL_HANDLER
 
 	constructor(private list: any[]) {}
-
-	/**
-	 * Execute the middleware fn by passing params to it
-	 */
-	private async executor(fn: MiddlewareFn, params: MiddlewareArgs): Promise<void> {
-		await fn(...params)
-	}
 
 	/**
 	 * Invoke one middleware at a time. Middleware fns will be executed
@@ -56,7 +53,7 @@ export class Runnable {
 			return this.registeredFinalHandler.fn(...this.registeredFinalHandler.args)
 		}
 
-		return this.resolveFn(fn, this.params)
+		return this.executorFn(fn, this.params)
 	}
 
 	/**
@@ -73,8 +70,8 @@ export class Runnable {
 	 * and it's the responsibility of this method to call the
 	 * middleware and pass params to it
 	 */
-	public resolve(fn: Executor): this {
-		this.resolveFn = fn
+	public executor(fn: Executor): this {
+		this.executorFn = fn
 		return this
 	}
 

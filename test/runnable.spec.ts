@@ -119,7 +119,7 @@ test.group('Runnable', () => {
 
 		const runner = new Runnable([first, second, third])
 
-		runner.resolve(function fn(item, params) {
+		runner.executor(function fn(item, params) {
 			if (item.name === 'second') {
 				return item.apply(new Foo(), params)
 			}
@@ -181,7 +181,7 @@ test.group('Runnable', () => {
 		const runner = new Runnable([First, Second, Third])
 		const request = {}
 
-		runner.resolve(function fn(item, params) {
+		runner.executor(function fn(item, params) {
 			const i = new item()
 			return i.handle.apply(i, params)
 		})
