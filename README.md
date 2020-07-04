@@ -12,9 +12,9 @@ Co compose composes an array of middleware to be executed in sequence. The libra
 <details>
 	<summary> <strong>Benchmarks</strong> </summary>
 
-	Co Compose x 476,525 ops/sec ±0.32% (82 runs sampled)   
-	fastseries x 126,951 ops/sec ±15.74% (60 runs sampled)   
-	middie x 119,628 ops/sec ±5.25% (56 runs sampled)
+	Co Compose x 483,657 ops/sec ±0.32% (83 runs sampled)   
+	fastseries x 115,073 ops/sec ±11.00% (55 runs sampled)   
+	middie x 123,014 ops/sec ops/sec ±4.73% (62 runs sampled)
 
 <p> <strong> Fastest is Co Compose </strong> </p>
 </details>

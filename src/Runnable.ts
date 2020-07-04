@@ -9,12 +9,19 @@
 
 import { Executor, FinalHandler, FinalHandlerArgs, MiddlewareArgs, MiddlewareFn } from './Contracts'
 
+/**
+ * Default final handler resolves the middleware chain right away
+ */
 const DEFAULT_FINAL_HANDLER = {
 	fn: () => Promise.resolve(),
 	args: [],
 }
 
-const DEFAULT_EXECUTOR = async (fn: MiddlewareFn, params: MiddlewareArgs) => {
+/**
+ * The default executor to execute middlewares. This method assumes middleware
+ * as functions and calls them right away
+ */
+const DEFAULT_EXECUTOR: Executor = async (fn: MiddlewareFn, params: MiddlewareArgs) => {
 	await fn(...params)
 }
 
@@ -81,6 +88,6 @@ export class Runnable {
 	 */
 	public async run(params: any[]): Promise<void> {
 		this.params = params.concat(this.invoke.bind(this))
-		await this.invoke()
+		return this.invoke()
 	}
 }
