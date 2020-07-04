@@ -26,7 +26,7 @@ Co compose composes an array of middleware to be executed in sequence. The libra
 - [Installation](#installation)
 - [Usage](#usage)
   - [Passing values](#passing-values)
-  - [Custom resolver](#custom-resolver)
+  - [Custom executors](#custom-executors)
   - [Final Handler](#final-handler)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -82,8 +82,8 @@ await middleware.runner().run([ctx])
 assert.deepEqual(ctx.stack, ['fn1', 'fn2'])
 ```
 
-### Custom resolver
-The default behaviour is to define middleware as functions. However, you can define them in any shape and then use a custom resolver to execute them. 
+### Custom executors
+The default behavior is to define middleware as functions. However, you can define them in any shape and then stick a custom executor to execute them.
 
 Check the following example where `ES6 classes` are used.
 
@@ -111,9 +111,9 @@ middleware.register([Middleware1, Middleware2])
 
 await middleware
 	.runner()
-	.resolve(async function (MiddlewareClass, params) {
-		const instance = new MiddlewareClass()
-		await instance.handle(...params)
+	.executor(async function (MiddlewareClass, params) {
+		const instance = new MiddlewareClass() // 👈
+		await instance.handle(...params) // 👈
 	})
 	.run([ctx])
 ```
@@ -121,7 +121,7 @@ await middleware
 ### Final Handler
 The final handler is a executed when the entire middleware chain ends by calling `next`. This makes it easier to execute custom functions, which are not part of the chain, however must be executed when chain ends.
 
-> The arguments are customizable for the final handler
+> Also, the arguments for the final handler can be different from the middleware arguments
 
 ```js
 async function fn1 (ctx, next) {
