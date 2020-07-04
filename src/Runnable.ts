@@ -9,6 +9,11 @@
 
 import { Executor, FinalHandler, FinalHandlerArgs, MiddlewareArgs, MiddlewareFn } from './Contracts'
 
+const DEFAULT_FINAL_HANDLER = {
+	fn: () => Promise.resolve(),
+	args: [],
+}
+
 /**
  * Runnable to execute an array of functions in sequence. The queue is
  * advanced only when the current function calls `next`.
@@ -20,10 +25,10 @@ import { Executor, FinalHandler, FinalHandlerArgs, MiddlewareArgs, MiddlewareFn 
  * ```
  */
 export class Runnable {
-	private resolveFn: Executor | null
-	private registeredFinalHandler: { fn: FinalHandler; args: FinalHandlerArgs } | null = null
 	private index = 0
-	private params: any[] = []
+	private params: MiddlewareArgs = []
+	private resolveFn: Executor = this.executor.bind(this)
+	private registeredFinalHandler: { fn: FinalHandler; args: FinalHandlerArgs } = DEFAULT_FINAL_HANDLER
 
 	constructor(private list: any[]) {}
 
@@ -48,24 +53,10 @@ export class Runnable {
 		 * Empty stack
 		 */
 		if (!fn) {
-			return this.registeredFinalHandler
-				? this.registeredFinalHandler.fn(...this.registeredFinalHandler.args)
-				: Promise.resolve()
+			return this.registeredFinalHandler.fn(...this.registeredFinalHandler.args)
 		}
 
-		/**
-		 * Params to pass to next middleware fn
-		 */
-		const resolvedParams: MiddlewareArgs = this.params.concat(this.invoke.bind(this))
-
-		/**
-		 * Call custom resolve fn (if exists)
-		 */
-		if (this.resolveFn) {
-			return this.resolveFn(fn, resolvedParams)
-		}
-
-		await this.executor(fn, resolvedParams)
+		return this.resolveFn(fn, this.params)
 	}
 
 	/**
@@ -92,7 +83,7 @@ export class Runnable {
 	 * array will be passed as spread arguments.
 	 */
 	public async run(params: any[]): Promise<void> {
-		this.params = params
+		this.params = params.concat(this.invoke.bind(this))
 		await this.invoke()
 	}
 }

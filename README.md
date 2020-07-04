@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://res.cloudinary.com/adonisjs/image/upload/q_100/v1557762307/poppinss_iftxlt.jpg" width="600px">
+	<img src="https://res.cloudinary.com/adonisjs/image/upload/q_100/v1557762307/poppinss_iftxlt.jpg" width="600px">
 </div>
 
 # Co Compose
@@ -10,13 +10,13 @@
 Co compose composes an array of middleware to be executed in sequence. The library is framework independent and can be used in any Javascript/Typescript project.
 
 <details>
-  <summary> <strong>Benchmarks</strong> </summary>
+	<summary> <strong>Benchmarks</strong> </summary>
 
-   Co Compose x 244,726 ops/sec ±0.65% (81 runs sampled)   
-   fastseries x 139,141 ops/sec ±5.83% (62 runs sampled)  
-   middie x 123,217 ops/sec ±5.04% (64 runs sampled)  
+	Co Compose x 389,338 ops/sec ±3.19% (76 runs sampled)   
+	fastseries x 121,601 ops/sec ±9.40% (60 runs sampled)   
+	middie x 118,444 ops/sec ±4.74% (66 runs sampled)
 
-  <p> <strong> Fastest is Co Compose </strong> </p>
+<p> <strong> Fastest is Co Compose </strong> </p>
 </details>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -45,13 +45,13 @@ Checkout the following example to run an array of middleware functions.
 ```ts
 import { Middleware } from 'co-compose'
 async function fn1 (next) {
-  console.log('executing fn1')
-  await next()
+	console.log('executing fn1')
+	await next()
 }
 
 async function fn2 (next) {
-  console.log('executing fn2')
-  await next()
+	console.log('executing fn2')
+	await next()
 }
 
 const middleware = new Middleware()
@@ -65,17 +65,17 @@ You can also pass values to all middleware functions. An `array` of values passe
 
 ```js
 async function fn1 (ctx, next) {
-  ctx.stack.push('fn1')
-  await next()
+	ctx.stack.push('fn1')
+	await next()
 }
 
 async function fn2 (ctx, next) {
-  ctx.stack.push('fn2')
-  await next()
+	ctx.stack.push('fn2')
+	await next()
 }
 
 const ctx = {
-  stack: []
+	stack: []
 }
 
 await middleware.runner().run([ctx])
@@ -89,33 +89,33 @@ Check the following example where `ES6 classes` are used.
 
 ```js
 class Middleware1 {
-  async handle (ctx, next) {
-    ctx.stack.push('fn1')
-    await next()
-  }
+	async handle (ctx, next) {
+		ctx.stack.push('fn1')
+		await next()
+	}
 }
 
 class Middleware2 {
-  async handle (ctx, next) {
-    ctx.stack.push('fn2')
-    await next()
-  }
+	async handle (ctx, next) {
+		ctx.stack.push('fn2')
+		await next()
+	}
 }
 
 const middleware = new Middleware()
 const ctx = {
-  stack: []
+	stack: []
 }
 
 middleware.register([Middleware1, Middleware2])
 
 await middleware
-  .runner()
-  .resolve(async function (MiddlewareClass, params) {
-    const instance = new MiddlewareClass()
-    await instance.handle(...params)
-  })
-  .run([ctx])
+	.runner()
+	.resolve(async function (MiddlewareClass, params) {
+		const instance = new MiddlewareClass()
+		await instance.handle(...params)
+	})
+	.run([ctx])
 ```
 
 ### Final Handler
@@ -125,22 +125,22 @@ The final handler is a executed when the entire middleware chain ends by calling
 
 ```js
 async function fn1 (ctx, next) {
-  ctx.stack.push('fn1')
-  await next()
+	ctx.stack.push('fn1')
+	await next()
 }
 
 async function finalHandler () {
-  ctx.stack.push('final handler')
+	ctx.stack.push('final handler')
 }
 
 const ctx = {
-  stack: []
+	stack: []
 }
 
 await middleware
-  .runner()
-  .finalHandler(finalHandler, [ctx])
-  .run([ctx])
+	.runner()
+	.finalHandler(finalHandler, [ctx])
+	.run([ctx])
 
 assert.deepEqual(ctx.stack, ['fn1', 'final handler'])
 ```
