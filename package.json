@@ -19,7 +19,8 @@
     "commit": "git-cz",
     "release": "np",
     "version": "npm run build",
-    "lint": "eslint . --ext=.ts"
+    "lint": "eslint . --ext=.ts",
+    "benchmark": "ts-node benchmarks/index.ts"
   },
   "keywords": [
     "adonisjs",

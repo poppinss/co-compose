@@ -1,16 +1,3 @@
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-## Table of contents
-
-- [Co Compose](#co-compose)
-  - [Installation](#installation)
-  - [Usage](#usage)
-    - [Passing values](#passing-values)
-    - [Custom resolver](#custom-resolver)
-    - [Final Handler](#final-handler)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
 <div align="center">
   <img src="https://res.cloudinary.com/adonisjs/image/upload/q_100/v1557762307/poppinss_iftxlt.jpg" width="600px">
 </div>
@@ -20,7 +7,28 @@
 
 [![circleci-image]][circleci-url] [![typescript-image]][typescript-url] [![npm-image]][npm-url] [![license-image]][license-url]
 
-Co compose composes an array of middleware to be executed in sequence. The library is framework independent and can be used in any Javascript project.
+Co compose composes an array of middleware to be executed in sequence. The library is framework independent and can be used in any Javascript/Typescript project.
+
+<details>
+  <summary> <strong>Benchmarks</strong> </summary>
+
+  Co Compose x 244,726 ops/sec ±0.65% (81 runs sampled)
+  fastseries x 139,141 ops/sec ±5.83% (62 runs sampled)
+  middie x 123,217 ops/sec ±5.04% (64 runs sampled)
+
+</details>
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table of contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Passing values](#passing-values)
+  - [Custom resolver](#custom-resolver)
+  - [Final Handler](#final-handler)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Installation
 ```sh
