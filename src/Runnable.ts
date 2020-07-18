@@ -37,7 +37,10 @@ export class Runnable {
 	private index = 0
 	private params: MiddlewareArgs = []
 	private executorFn: Executor = DEFAULT_EXECUTOR
-	private registeredFinalHandler: { fn: FinalHandler; args: FinalHandlerArgs } = DEFAULT_FINAL_HANDLER
+	private registeredFinalHandler: {
+		fn: FinalHandler
+		args: FinalHandlerArgs
+	} = DEFAULT_FINAL_HANDLER
 
 	constructor(private list: any[]) {}
 

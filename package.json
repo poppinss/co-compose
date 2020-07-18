@@ -63,17 +63,6 @@
 			"path": "cz-conventional-changelog"
 		}
 	},
-	"nyc": {
-		"include": [
-			"src"
-		],
-		"exclude": [
-			"test"
-		],
-		"extension": [
-			".ts"
-		]
-	},
 	"husky": {
 		"hooks": {
 			"commit-msg": "node ./node_modules/@adonisjs/mrm-preset/validateCommit/conventional/validate.js",

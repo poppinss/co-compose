@@ -284,7 +284,14 @@ test.group('Runnable', () => {
 		const runner = new Runnable([first, second, third])
 
 		await runner.run([])
-		assert.deepEqual(chain, ['first', 'second', 'third', 'third after', 'second after', 'first after'])
+		assert.deepEqual(chain, [
+			'first',
+			'second',
+			'third',
+			'third after',
+			'second after',
+			'first after',
+		])
 	})
 
 	test('execute middleware in reverse even when they have delays', async (assert) => {
@@ -314,7 +321,14 @@ test.group('Runnable', () => {
 		const runner = new Runnable([first, second, third])
 
 		await runner.run([])
-		assert.deepEqual(chain, ['first', 'second', 'third', 'third after', 'second after', 'first after'])
+		assert.deepEqual(chain, [
+			'first',
+			'second',
+			'third',
+			'third after',
+			'second after',
+			'first after',
+		])
 	})
 
 	test('report error thrown inside syncrohonous functions', async (assert) => {
