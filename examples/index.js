@@ -24,7 +24,7 @@
 
 	await middleware
 		.runner()
-		.resolve(async function (MiddlewareClass, params) {
+		.executor(async function (MiddlewareClass, params) {
 			const instance = new MiddlewareClass()
 			await instance.handle(...params)
 		})
