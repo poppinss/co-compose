@@ -97,7 +97,7 @@ test.group('Runnable', () => {
 		}
 	})
 
-	test('define custom resolveFn', async (assert) => {
+	test('define custom executor', async (assert) => {
 		const chain: any[] = []
 
 		async function first(next) {
@@ -382,6 +382,31 @@ test.group('Runnable', () => {
 
 		runner.finalHandler(finalHandler, ['foo'])
 		await runner.run(['bar'])
+
+		assert.deepEqual(stack, ['bar'])
+	})
+
+	test('do not call final handler when middleware raises exception', async (assert) => {
+		assert.plan(2)
+		const stack: any[] = []
+
+		const runner = new Runnable([
+			function fn(ctx) {
+				stack.push(ctx)
+				throw new Error('Failed')
+			},
+		])
+
+		async function finalHandler(ctx) {
+			stack.push(ctx)
+		}
+
+		runner.finalHandler(finalHandler, ['foo'])
+		try {
+			await runner.run(['bar'])
+		} catch (error) {
+			assert.equal(error.message, 'Failed')
+		}
 
 		assert.deepEqual(stack, ['bar'])
 	})
