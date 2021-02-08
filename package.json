@@ -19,7 +19,7 @@
 		"commit": "git-cz",
 		"release": "np",
 		"version": "npm run build",
-		"benchmark": "ts-node benchmarks/index.ts",
+		"benchmark": "node -r @adonisjs/require-ts/build/register benchmarks/index.ts",
 		"format": "prettier --write .",
 		"lint": "eslint . --ext=.ts",
 		"sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json poppinss/co-compose"
