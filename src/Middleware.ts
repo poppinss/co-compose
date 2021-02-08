@@ -14,26 +14,26 @@ import { Runnable } from './Runnable'
  * them using the runner.
  */
 export class Middleware {
-	private list: any[] = []
+  private list: any[] = []
 
-	/**
-	 * Register an array of middleware to executed
-	 * later.
-	 */
-	public register(list: any[]): this {
-		if (!Array.isArray(list)) {
-			throw new Error('middleware.register expects an array of middleware')
-		}
+  /**
+   * Register an array of middleware to executed
+   * later.
+   */
+  public register(list: any[]): this {
+    if (!Array.isArray(list)) {
+      throw new Error('middleware.register expects an array of middleware')
+    }
 
-		this.list = this.list.concat(list)
-		return this
-	}
+    this.list = this.list.concat(list)
+    return this
+  }
 
-	/**
-	 * Returns an instance of runner to execute
-	 * the middleware
-	 */
-	public runner() {
-		return new Runnable(this.list)
-	}
+  /**
+   * Returns an instance of runner to execute
+   * the middleware
+   */
+  public runner() {
+    return new Runnable(this.list)
+  }
 }
