@@ -6,7 +6,7 @@
 
 > Compose an array of functions to be executed one after the other. Similar to Koa and AdonisJS middlewares.
 
-[![circleci-image]][circleci-url] [![typescript-image]][typescript-url] [![npm-image]][npm-url] [![license-image]][license-url] [![synk-image]][synk-url]
+[![gh-workflow-image]][gh-workflow-url] [![typescript-image]][typescript-url] [![npm-image]][npm-url] [![license-image]][license-url] [![synk-image]][synk-url]
 
 Co compose composes an array of middleware to be executed in sequence. The library is framework independent and can be used in any Javascript/Typescript project.
 
@@ -148,13 +148,17 @@ await middleware.runner().finalHandler(finalHandler, [ctx]).run([ctx])
 assert.deepEqual(ctx.stack, ['fn1', 'final handler'])
 ```
 
-[circleci-image]: https://img.shields.io/circleci/project/github/poppinss/co-compose/master.svg?style=for-the-badge&logo=circleci
-[circleci-url]: https://circleci.com/gh/poppinss/co-compose 'circleci'
+[gh-workflow-image]: https://img.shields.io/github/workflow/status/poppinss/co-compose/test?style=for-the-badge
+[gh-workflow-url]: https://github.com/poppinss/co-compose/actions/workflows/test.yml "Github action"
+
 [typescript-image]: https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript
 [typescript-url]: "typescript"
+
 [npm-image]: https://img.shields.io/npm/v/co-compose.svg?style=for-the-badge&logo=npm
 [npm-url]: https://npmjs.org/package/co-compose 'npm'
+
 [license-image]: https://img.shields.io/npm/l/co-compose?color=blueviolet&style=for-the-badge
 [license-url]: LICENSE.md 'license'
+
 [synk-image]: https://img.shields.io/snyk/vulnerabilities/github/poppinss/co-compose?label=Synk%20Vulnerabilities&style=for-the-badge
 [synk-url]: https://snyk.io/test/github/poppinss/co-compose?targetFile=package.json 'synk'
