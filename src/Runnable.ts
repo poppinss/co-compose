@@ -21,7 +21,7 @@ const DEFAULT_FINAL_HANDLER = {
  * The default executor to execute middlewares. This method assumes middleware
  * as functions and calls them right away
  */
-const DEFAULT_EXECUTOR: Executor = async (fn: MiddlewareFn, params: MiddlewareArgs) => fn(...params)
+const DEFAULT_EXECUTOR: Executor = (fn: MiddlewareFn, params: MiddlewareArgs) => fn(...params)
 
 /**
  * Runnable to execute an array of functions in sequence. The queue is
@@ -51,7 +51,7 @@ export class Runnable {
    * If one method doesn't call `next`, then the chain will be finished
    * automatically.
    */
-  private async invoke() {
+  private invoke() {
     const fn = this.list[this.index++]
 
     /**
