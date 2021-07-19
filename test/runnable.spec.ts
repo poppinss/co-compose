@@ -13,7 +13,7 @@ import test from 'japa'
 import { Runnable } from '../src/Runnable'
 
 function sleep(timeout: number) {
-  return new Promise((resolve) => {
+  return new Promise<void>((resolve) => {
     setTimeout(resolve, timeout)
   })
 }
