@@ -11,11 +11,11 @@
 Co compose composes an array of middleware to be executed in sequence. The library is framework independent and can be used in any Javascript/Typescript project.
 
 <details>
-	<summary> <strong>Benchmarks</strong> </summary>
+	<summary> <strong>Benchmarks (v16.5.0)</strong> </summary>
 
-    Co Compose x 521,393 ops/sec ±1.41% (82 runs sampled)
-    fastseries x 114,855 ops/sec ±6.97% (42 runs sampled)
-    middie x 109,021 ops/sec ±6.62% (42 runs sampled)
+    Co Compose x 1,004,069 ops/sec ±1.61% (79 runs sampled)
+    fastseries x 120,086 ops/sec ±6.56% (48 runs sampled)
+    middie x 108,646 ops/sec ±17.76% (37 runs sampled)
 
 <p> <strong> Fastest is Co Compose </strong> </p>
 </details>
