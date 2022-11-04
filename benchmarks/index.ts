@@ -1,7 +1,7 @@
-import Middie from 'middie/engine'
+import Middie from 'middie'
+import { Socket } from 'net'
 import Fastseries from 'fastseries'
 import { IncomingMessage } from 'http'
-import { Socket } from 'net'
 import { Suite, Deferred } from 'benchmark'
 
 import { Middleware } from '../index'
