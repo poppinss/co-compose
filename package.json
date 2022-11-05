@@ -1,7 +1,7 @@
 {
-	"name": "co-compose",
-	"version": "7.0.3",
-	"description": "AdonisJS and Koa style middleware layer with ability to run middleware",
+	"name": "@poppinss/middleware",
+	"version": "0.0.0",
+	"description": "Implementation of the chain of responsibility design pattern",
 	"main": "build/index.js",
 	"type": "module",
 	"files": [
@@ -28,13 +28,10 @@
 		"vscode:test": "node --loader=ts-node/esm bin/test.ts"
 	},
 	"keywords": [
-		"adonisjs",
 		"koa",
-		"middleware",
-		"co",
-		"co-middleware"
+		"middleware"
 	],
-	"author": "virk,adonisjs",
+	"author": "virk,poppinss",
 	"license": "MIT",
 	"devDependencies": {
 		"@commitlint/cli": "^17.2.0",
