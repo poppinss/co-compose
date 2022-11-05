@@ -1,151 +1,108 @@
-<div align="center">
-	<img src="https://res.cloudinary.com/adonisjs/image/upload/q_100/v1557762307/poppinss_iftxlt.jpg" width="600px">
-</div>
-
-# Co Compose
-
-> Compose an array of functions to be executed one after the other. Similar to Koa and AdonisJS middlewares.
+# @poppinss/middleware
+> Implementation of the chain of responsibility design pattern.
 
 [![gh-workflow-image]][gh-workflow-url] [![typescript-image]][typescript-url] [![npm-image]][npm-url] [![license-image]][license-url] [![synk-image]][synk-url]
 
-Co compose composes an array of middleware to be executed in sequence. The library is framework independent and can be used in any Javascript/Typescript project.
+This package is a zero-dependency implementation for the chain of responsibility design pattern, also known as the middleware pipeline.
 
-<details>
-	<summary> <strong>Benchmarks (v16.5.0)</strong> </summary>
-
-    Co Compose x 2,145,829 ops/sec ±0.16% (90 runs sampled)
-    fastseries x 166,990 ops/sec ±2.04% (64 runs sampled)
-    middie x 122,162 ops/sec ±7.84% (28 runs sampled)
-
-<p> <strong> Fastest is Co Compose </strong> </p>
-</details>
-
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-## Table of contents
-
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Passing values](#passing-values)
-  - [Custom executors](#custom-executors)
-  - [Final Handler](#final-handler)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-## Installation
+## Setup
+Install the package from the npm packages registry.
 
 ```sh
-npm i co-compose
+npm i @poppinss/middleware
 
-# yarn
-yarn add co-compose
+# yarn lovers
+yarn add @poppinss/middleware
 ```
 
-## Usage
-
-Checkout the following example to run an array of middleware functions.
+And import the `Middleware` class as follows.
 
 ```ts
-import { Middleware } from 'co-compose'
-async function fn1(next) {
+import { Middleware } from '@poppinss/middleware'
+
+const middleware = new Middleware()
+middleware.add((ctx, next) => {
   console.log('executing fn1')
   await next()
-}
+})
 
-async function fn2(next) {
+middleware.add((ctx, next) => {
   console.log('executing fn2')
   await next()
-}
+})
 
-const middleware = new Middleware()
-middleware.register([fn1, fn2])
-
-await middleware.runner().run([])
+const context = {}
+await middleware.runner().run(context)
 ```
 
-### Passing values
+## Defining middleware
 
-You can also pass values to all middleware functions. An `array` of values passed to `runner.run()` will be passed to middleware functions as multiple arguments.
+The middleware handlers are defined using the `middleware.add` method. The method accepts a callback function to execute.
+
+```ts
+const middleware = new Middleware()
+
+middleware.add(function () {
+  console.log('called')
+})
+```
+
+You can also define middleware as an object with the `name` and the `handle` method property.
+
+```ts
+const middleware = new Middleware()
+function authenticate() {}
+
+middleware.add({ name: 'authenticate', handle: authenticate })
+```
+
+### Passing context to middleware
+You can pass a context object to the `runner.run` method, which the runner will share with the middleware callbacks. For example:
+
+```ts
+const middleware = new Middleware()
+const context = {}
+
+middleware.add(function (ctx, next) {
+  assert.deepEqual(ctx, context)
+  await next()
+})
+
+const runner = middleware.runner()
+await runner.run(context)
+```
+
+
+### Final Handler
+The final handler is executed when the entire middleware chain ends by calling `next`. This makes it easier to execute custom functions that are not part of the chain but must be executed when it ends.
 
 ```js
-async function fn1(ctx, next) {
+const middleware = new Middleware()
+const context = {
+  stack: [],
+}
+
+middleware.add((ctx, next) => {
   ctx.stack.push('fn1')
   await next()
-}
-
-async function fn2(ctx, next) {
-  ctx.stack.push('fn2')
-  await next()
-}
-
-const ctx = {
-  stack: [],
-}
-
-await middleware.runner().run([ctx])
-assert.deepEqual(ctx.stack, ['fn1', 'fn2'])
-```
-
-### Custom executors
-
-The default behavior is to define middleware as functions. However, you can define them in any shape and then stick a custom executor to execute them.
-
-Check the following example where `ES6 classes` are used.
-
-```js
-class Middleware1 {
-  async handle(ctx, next) {
-    ctx.stack.push('fn1')
-    await next()
-  }
-}
-
-class Middleware2 {
-  async handle(ctx, next) {
-    ctx.stack.push('fn2')
-    await next()
-  }
-}
-
-const middleware = new Middleware()
-const ctx = {
-  stack: [],
-}
-
-middleware.register([Middleware1, Middleware2])
+})
 
 await middleware
   .runner()
-  .executor(async function (MiddlewareClass, params) {
-    const instance = new MiddlewareClass() // 👈
-    await instance.handle(...params) // 👈
+  .finalHandler(() => {
+    ctx.stack.push('final handler')
   })
-  .run([ctx])
-```
-
-### Final Handler
-
-The final handler is a executed when the entire middleware chain ends by calling `next`. This makes it easier to execute custom functions, which are not part of the chain, however must be executed when chain ends.
-
-> Also, the arguments for the final handler can be different from the middleware arguments
-
-```js
-async function fn1(ctx, next) {
-  ctx.stack.push('fn1')
-  await next()
-}
-
-async function finalHandler() {
-  ctx.stack.push('final handler')
-}
-
-const ctx = {
-  stack: [],
-}
-
-await middleware.runner().finalHandler(finalHandler, [ctx]).run([ctx])
+  .run(ctx)
 
 assert.deepEqual(ctx.stack, ['fn1', 'final handler'])
+```
+
+## Context type
+You can specify the context type as a generic when creating the `Middleware` class instance.
+
+```ts
+class Context {}
+const middleware = new Middleware<Context>()
 ```
 
 [gh-workflow-image]: https://img.shields.io/github/workflow/status/poppinss/co-compose/test?style=for-the-badge
