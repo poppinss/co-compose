@@ -18,7 +18,7 @@ yarn add @poppinss/middleware
 And import the `Middleware` class as follows.
 
 ```ts
-import { Middleware } from '@poppinss/middleware'
+import Middleware from '@poppinss/middleware'
 
 const middleware = new Middleware()
 middleware.add((ctx, next) => {
